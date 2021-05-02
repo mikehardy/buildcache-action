@@ -1,8 +1,8 @@
 {
-  "name": "typescript-action",
-  "version": "0.0.0",
-  "private": true,
-  "description": "TypeScript template action",
+  "name": "buildcache-action",
+  "version": "1.0.0",
+  "private": false,
+  "description": "GitHub Action that installs and configures buildcache to accelerate compilation",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -15,14 +15,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/mikehardy/buildcache-action.git"
   },
   "keywords": [
     "actions",
     "node",
-    "setup"
+    "build",
+    "compile",
+    "cache",
+    "buildcache"
   ],
-  "author": "",
+  "author": "Mike Hardy <github@mikehardy.net>",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6"
