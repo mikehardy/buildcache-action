@@ -39,11 +39,11 @@ test('test bundled restore runs', () => {
   // assert that config items are in GITHUB_ENV
 })
 
-// test('test bundled save runs', () => {
-//   const np = process.execPath
-//   const ip = path.join(__dirname, '..', 'dist', 'save', 'index.js')
-//   const options: cp.ExecFileSyncOptions = {
-//     env: process.env
-//   }
-//   console.log(cp.execFileSync(np, [ip], options).toString())
-// })
+test('test bundled save runs', () => {
+  const np = process.execPath
+  const ip = path.join(__dirname, '..', 'dist', 'save', 'index.js')
+  const options: cp.ExecFileSyncOptions = {
+    env: process.env
+  }
+  console.log(cp.execFileSync(np, [ip], options).toString())
+})

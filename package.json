@@ -34,6 +34,7 @@
   "author": "Mike Hardy <github@mikehardy.net>",
   "license": "MIT",
   "dependencies": {
+    "@actions/cache": "^1.0.7",
     "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
     "@actions/github": "^4.0.0",

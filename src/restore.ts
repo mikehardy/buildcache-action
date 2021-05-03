@@ -1,4 +1,5 @@
 import * as path from 'path'
+import * as cache from '@actions/cache'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as io from '@actions/io'
@@ -107,8 +108,35 @@ export async function downloadLatest(): Promise<void> {
   }
 }
 
+async function restore(): Promise<void> {
+  let restoreKey = `buildcache-`
+
+  const inputKey = core.getInput('key')
+  if (inputKey) {
+    restoreKey += `${inputKey}-`
+  }
+
+  const restoreKeys = [restoreKey]
+
+  const key = restoreKey + new Date().toISOString()
+
+  const paths = ['.ccache']
+
+  try {
+    const restoredWith = await cache.restoreCache(paths, key, restoreKeys)
+    if (restoredWith) {
+      core.info(`Restored from cache key "${restoredWith}".`)
+    } else {
+      core.info('No cache found.')
+    }
+  } catch (e) {
+    core.warning(`caching not working: ${e}`)
+  }
+}
+
 async function run(): Promise<void> {
   await downloadLatest()
+  await restore()
 }
 
 run()
