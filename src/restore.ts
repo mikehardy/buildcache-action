@@ -1,6 +1,6 @@
 import * as path from 'path'
-import * as stream from 'stream'
 import * as core from '@actions/core'
+import * as github from '@actions/github'
 import * as io from '@actions/io'
 import * as toolcache from '@actions/tool-cache'
 import * as exec from '@actions/exec'
@@ -23,30 +23,25 @@ export async function downloadLatest(): Promise<void> {
 
   core.info(`release filename based on runner os is ${filename}`)
 
-  const options: exec.ExecOptions = {}
-
-  let myOutput = ''
-  const ws = new stream.Writable()
-  ws._write = (chunk, _encoding, next) => {
-    myOutput += chunk.toString()
-    next()
-  }
-  options.outStream = ws
-
   // Grab the releases page for the for the buildcache project
   try {
-    await exec.exec(
-      'curl',
-      [
-        '-s',
-        'https://api.github.com/repos/mbitsnbites/buildcache/releases/latest'
-      ],
-      options
-    )
-    core.info(`we have curl output of? ${myOutput.toString()}`)
-    const buildCacheReleaseUrl = myOutput
-      .toString()
-      .match(new RegExp(`https://.*${filename}`))
+    const githubToken = process.env.GITHUB_TOKEN
+    if (!githubToken) {
+      core.setFailed(
+        'No GITHUB_TOKEN available, unable to get buildcache releases.'
+      )
+      return
+    }
+    // console.log(`we have githubToken ${githubToken}`)
+    const octokit = github.getOctokit(githubToken)
+
+    const releaseInfo = await octokit.repos.getLatestRelease({
+      owner: 'mbitsnbites',
+      repo: 'buildcache'
+    })
+
+    console.log(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
+    const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`
 
     if (!buildCacheReleaseUrl) {
       core.setFailed('Unable to determine release URL for buildcache')
@@ -54,7 +49,7 @@ export async function downloadLatest(): Promise<void> {
     }
     core.info(`we have a download url? ${buildCacheReleaseUrl}`)
     const buildcacheReleasePath = await toolcache.downloadTool(
-      buildCacheReleaseUrl[0]
+      buildCacheReleaseUrl
     )
     core.info(`we have a tool download path of ${buildcacheReleasePath}`)
     const ghWorkSpace = process.env.GITHUB_WORKSPACE

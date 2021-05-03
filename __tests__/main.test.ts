@@ -31,11 +31,7 @@ test('test bundled restore runs', () => {
   const options: cp.ExecFileSyncOptions = {
     env: process.env
   }
-  try {
-    console.log(cp.execFileSync(np, [ip], options).toString())
-  } catch (e) {
-    fail(new Error(`Restore script did not run successfully - ${e}`))
-  }
+  console.log(cp.execFileSync(np, [ip], options).toString())
 
   // assert that the binary is in ghWorkspace/buildcache/bin/buildcache
   // assert that the symbolic links to clang and clang++ are there
