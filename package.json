@@ -43,7 +43,7 @@
     "@types/node": "^15.0.1",
     "@types/rimraf": "^3.0.0",
     "@typescript-eslint/parser": "^4.8.1",
-    "@vercel/ncc": "^0.28.4",
+    "@vercel/ncc": "^0.28.5",
     "eslint": "^7.17.0",
     "eslint-plugin-github": "^4.1.1",
     "eslint-plugin-jest": "^24.1.3",
