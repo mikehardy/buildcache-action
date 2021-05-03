@@ -7,7 +7,7 @@ inputs:
     description: 'path to buildcache config file - https://github.com/mbitsnbites/buildcache/blob/master/doc/configuration.md'
     default: 'buildcache will rely on default config file or if missing, default values for all settings'
 runs:
-  using: 'node14'
+  using: 'node12'
   main: 'dist/restore/index.js'
   post: 'dist/save/index.js'
 branding:
