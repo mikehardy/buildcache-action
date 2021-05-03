@@ -31,7 +31,11 @@ test('test bundled restore runs', () => {
   const options: cp.ExecFileSyncOptions = {
     env: process.env
   }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+  try {
+    console.log(cp.execFileSync(np, [ip], options).toString())
+  } catch (e) {
+    fail(new Error(`Restore script did not run successfully - ${e}`))
+  }
 
   // assert that the binary is in ghWorkspace/buildcache/bin/buildcache
   // assert that the symbolic links to clang and clang++ are there
@@ -39,11 +43,11 @@ test('test bundled restore runs', () => {
   // assert that config items are in GITHUB_ENV
 })
 
-test('test bundled save runs', () => {
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'dist', 'save', 'index.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
-  console.log(cp.execFileSync(np, [ip], options).toString())
-})
+// test('test bundled save runs', () => {
+//   const np = process.execPath
+//   const ip = path.join(__dirname, '..', 'dist', 'save', 'index.js')
+//   const options: cp.ExecFileSyncOptions = {
+//     env: process.env
+//   }
+//   console.log(cp.execFileSync(np, [ip], options).toString())
+// })

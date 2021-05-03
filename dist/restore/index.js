@@ -5237,11 +5237,14 @@ function downloadLatest() {
             _actions_core__WEBPACK_IMPORTED_MODULE_2__.debug(`we have a folder of ${buildcacheFolder}`);
             // symbolic links are one thing but are they cross platform? cp should be better?
             const buildcacheBinFolder = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheFolder, 'buildcache', 'bin');
-            const buildcacheBinPath = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'buildcacne');
+            const buildcacheBinPath = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'buildcache');
             yield _actions_io__WEBPACK_IMPORTED_MODULE_3__.cp(buildcacheBinPath, path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'clang'));
             yield _actions_io__WEBPACK_IMPORTED_MODULE_3__.cp(buildcacheBinPath, path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'clang++'));
             // Now set up the environment by putting our path in there
-            // core.exportVariable()
+            _actions_core__WEBPACK_IMPORTED_MODULE_2__.exportVariable('BUILDCACHE_DIR', `${ghWorkSpace}/.buildcache`);
+            _actions_core__WEBPACK_IMPORTED_MODULE_2__.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000');
+            _actions_core__WEBPACK_IMPORTED_MODULE_2__.exportVariable('BUILDCACHE_DEBUG', 2);
+            _actions_core__WEBPACK_IMPORTED_MODULE_2__.exportVariable('BUILDCACHE_LOG_FILE', `${ghWorkSpace}/.buildcache/buildcache.log`);
             _actions_core__WEBPACK_IMPORTED_MODULE_2__.addPath(buildcacheBinFolder);
             yield _actions_exec__WEBPACK_IMPORTED_MODULE_5__.exec('buildcache', ['-c']);
             yield _actions_exec__WEBPACK_IMPORTED_MODULE_5__.exec('buildcache', ['-s']);

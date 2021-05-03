@@ -83,12 +83,18 @@ export async function downloadLatest(): Promise<void> {
 
     // symbolic links are one thing but are they cross platform? cp should be better?
     const buildcacheBinFolder = path.join(buildcacheFolder, 'buildcache', 'bin')
-    const buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcacne')
+    const buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcache')
     await io.cp(buildcacheBinPath, path.join(buildcacheBinFolder, 'clang'))
     await io.cp(buildcacheBinPath, path.join(buildcacheBinFolder, 'clang++'))
 
     // Now set up the environment by putting our path in there
-    // core.exportVariable()
+    core.exportVariable('BUILDCACHE_DIR', `${ghWorkSpace}/.buildcache`)
+    core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000')
+    core.exportVariable('BUILDCACHE_DEBUG', 2)
+    core.exportVariable(
+      'BUILDCACHE_LOG_FILE',
+      `${ghWorkSpace}/.buildcache/buildcache.log`
+    )
     core.addPath(buildcacheBinFolder)
 
     await exec.exec('buildcache', ['-c'])
