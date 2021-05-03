@@ -43,7 +43,7 @@ export async function downloadLatest(): Promise<void> {
       ],
       options
     )
-    // core.debug(`we have curl output of? ${myOutput.toString()}`)
+    core.info(`we have curl output of? ${myOutput.toString()}`)
     const buildCacheReleaseUrl = myOutput
       .toString()
       .match(new RegExp(`https://.*${filename}`))
@@ -85,7 +85,10 @@ export async function downloadLatest(): Promise<void> {
 
     // symbolic links are one thing but are they cross platform? cp should be better?
     const buildcacheBinFolder = path.join(buildcacheFolder, 'buildcache', 'bin')
-    const buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcache')
+    let buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcache')
+    if (os === 'win32') {
+      buildcacheBinPath += '.exe'
+    }
     await io.cp(buildcacheBinPath, path.join(buildcacheBinFolder, 'clang'))
     await io.cp(buildcacheBinPath, path.join(buildcacheBinFolder, 'clang++'))
 

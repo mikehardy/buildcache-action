@@ -5208,7 +5208,7 @@ function downloadLatest() {
                 '-s',
                 'https://api.github.com/repos/mbitsnbites/buildcache/releases/latest'
             ], options);
-            // core.debug(`we have curl output of? ${myOutput.toString()}`)
+            _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`we have curl output of? ${myOutput.toString()}`);
             const buildCacheReleaseUrl = myOutput
                 .toString()
                 .match(new RegExp(`https://.*${filename}`));
@@ -5239,7 +5239,10 @@ function downloadLatest() {
             _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`we have a folder of ${buildcacheFolder}`);
             // symbolic links are one thing but are they cross platform? cp should be better?
             const buildcacheBinFolder = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheFolder, 'buildcache', 'bin');
-            const buildcacheBinPath = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'buildcache');
+            let buildcacheBinPath = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'buildcache');
+            if (os === 'win32') {
+                buildcacheBinPath += '.exe';
+            }
             yield _actions_io__WEBPACK_IMPORTED_MODULE_3__.cp(buildcacheBinPath, path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'clang'));
             yield _actions_io__WEBPACK_IMPORTED_MODULE_3__.cp(buildcacheBinPath, path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'clang++'));
             // Now set up the environment by putting our path in there
