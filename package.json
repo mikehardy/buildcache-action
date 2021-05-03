@@ -3,14 +3,18 @@
   "version": "1.0.0",
   "private": false,
   "description": "GitHub Action that installs and configures buildcache to accelerate compilation",
-  "main": "lib/main.js",
+  "main": "dist/restore/index.js",
   "scripts": {
     "build": "tsc",
     "build-watch": "tsc-watch --onSuccess \"yarn package\"",
+    "clean": "yarn rimraf __tests__/runner ./dist ./lib",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "package": "ncc build --source-map --license licenses.txt",
+    "package-file": "ncc build --target es2020 --source-map --license licenses.txt -o",
+    "package-restore": "yarn package-file dist/restore src/restore.ts",
+    "package-save": "yarn package-file dist/save src/save.ts",
+    "package": "yarn package-restore && yarn package-save",
     "test": "jest",
     "test-watch": "jest --watch",
     "all": "yarn build && yarn format && yarn lint && yarn package && yarn test"
@@ -30,11 +34,14 @@
   "author": "Mike Hardy <github@mikehardy.net>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6"
+    "@actions/core": "^1.2.6",
+    "@actions/exec": "^1.0.4",
+    "@actions/tool-cache": "^1.6.1"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
     "@types/node": "^15.0.1",
+    "@types/rimraf": "^3.0.0",
     "@typescript-eslint/parser": "^4.8.1",
     "@vercel/ncc": "^0.28.4",
     "eslint": "^7.17.0",
@@ -44,6 +51,7 @@
     "jest-circus": "^26.6.3",
     "js-yaml": "^4.1.0",
     "prettier": "2.2.1",
+    "rimraf": "^3.0.2",
     "ts-jest": "^26.4.4",
     "tsc-watch": "^4.2.9",
     "typescript": "^4.1.3"
