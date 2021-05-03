@@ -10,6 +10,10 @@ runs:
   using: 'node12'
   main: 'dist/restore/index.js'
   post: 'dist/save/index.js'
+access_token:
+  required: false
+  description: 'Your GitHub Access Token, defaults to: {{ github.token }}'
+  default: '${{ github.token }}'
 branding:
   icon: 'archive'
   color: 'gray-dark'

@@ -25,7 +25,10 @@ export async function downloadLatest(): Promise<void> {
 
   // Grab the releases page for the for the buildcache project
   try {
-    const githubToken = process.env.GITHUB_TOKEN
+    let githubToken: string | undefined = core.getInput('access_token')
+    if (!githubToken || githubToken === '') {
+      githubToken = process.env.GITHUB_TOKEN
+    }
     if (!githubToken) {
       core.setFailed(
         'No GITHUB_TOKEN available, unable to get buildcache releases.'
@@ -40,7 +43,7 @@ export async function downloadLatest(): Promise<void> {
       repo: 'buildcache'
     })
 
-    core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
+    // core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
     const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`
 
     if (!buildCacheReleaseUrl) {

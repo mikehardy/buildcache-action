@@ -9872,7 +9872,10 @@ function downloadLatest() {
         _actions_core__WEBPACK_IMPORTED_MODULE_1__.info(`release filename based on runner os is ${filename}`);
         // Grab the releases page for the for the buildcache project
         try {
-            const githubToken = process.env.GITHUB_TOKEN;
+            let githubToken = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('access_token');
+            if (!githubToken || githubToken === '') {
+                githubToken = process.env.GITHUB_TOKEN;
+            }
             if (!githubToken) {
                 _actions_core__WEBPACK_IMPORTED_MODULE_1__.setFailed('No GITHUB_TOKEN available, unable to get buildcache releases.');
                 return;
@@ -9883,7 +9886,7 @@ function downloadLatest() {
                 owner: 'mbitsnbites',
                 repo: 'buildcache'
             });
-            _actions_core__WEBPACK_IMPORTED_MODULE_1__.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`);
+            // core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
             const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`;
             if (!buildCacheReleaseUrl) {
                 _actions_core__WEBPACK_IMPORTED_MODULE_1__.setFailed('Unable to determine release URL for buildcache');
