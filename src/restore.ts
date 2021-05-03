@@ -21,7 +21,7 @@ export async function downloadLatest(): Promise<void> {
       filename = 'buildcache-macos.zip'
   }
 
-  core.debug(`release filename based on runner os is ${filename}`)
+  core.info(`release filename based on runner os is ${filename}`)
 
   const options: exec.ExecOptions = {}
 
@@ -52,17 +52,17 @@ export async function downloadLatest(): Promise<void> {
       core.setFailed('Unable to determine release URL for buildcache')
       return
     }
-    // core.debug(`we have a download url? ${buildCacheReleaseUrl}`)
+    core.info(`we have a download url? ${buildCacheReleaseUrl}`)
     const buildcacheReleasePath = await toolcache.downloadTool(
       buildCacheReleaseUrl[0]
     )
-    // core.debug(`we have a tool download path of ${buildcacheReleasePath}`)
+    core.info(`we have a tool download path of ${buildcacheReleasePath}`)
     const ghWorkSpace = process.env.GITHUB_WORKSPACE
     if (!ghWorkSpace) {
       core.setFailed('process.env.GITHUB_WORKSPACE not set')
       return
     }
-    // await io.mkdirP(extractionPath)
+    await io.mkdirP(ghWorkSpace)
 
     let buildcacheFolder
     switch (os) {
@@ -81,7 +81,7 @@ export async function downloadLatest(): Promise<void> {
         )
         break
     }
-    core.debug(`we have a folder of ${buildcacheFolder}`)
+    core.info(`we have a folder of ${buildcacheFolder}`)
 
     // symbolic links are one thing but are they cross platform? cp should be better?
     const buildcacheBinFolder = path.join(buildcacheFolder, 'buildcache', 'bin')

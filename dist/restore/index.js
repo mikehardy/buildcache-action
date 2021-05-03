@@ -5193,7 +5193,7 @@ function downloadLatest() {
             default:
                 filename = 'buildcache-macos.zip';
         }
-        _actions_core__WEBPACK_IMPORTED_MODULE_2__.debug(`release filename based on runner os is ${filename}`);
+        _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`release filename based on runner os is ${filename}`);
         const options = {};
         let myOutput = '';
         const ws = new stream__WEBPACK_IMPORTED_MODULE_1__.Writable();
@@ -5216,15 +5216,15 @@ function downloadLatest() {
                 _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed('Unable to determine release URL for buildcache');
                 return;
             }
-            // core.debug(`we have a download url? ${buildCacheReleaseUrl}`)
+            _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`we have a download url? ${buildCacheReleaseUrl}`);
             const buildcacheReleasePath = yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.downloadTool(buildCacheReleaseUrl[0]);
-            // core.debug(`we have a tool download path of ${buildcacheReleasePath}`)
+            _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`we have a tool download path of ${buildcacheReleasePath}`);
             const ghWorkSpace = process.env.GITHUB_WORKSPACE;
             if (!ghWorkSpace) {
                 _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed('process.env.GITHUB_WORKSPACE not set');
                 return;
             }
-            // await io.mkdirP(extractionPath)
+            yield _actions_io__WEBPACK_IMPORTED_MODULE_3__.mkdirP(ghWorkSpace);
             let buildcacheFolder;
             switch (os) {
                 case 'linux':
@@ -5236,7 +5236,7 @@ function downloadLatest() {
                     buildcacheFolder = yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.extractZip(buildcacheReleasePath, ghWorkSpace);
                     break;
             }
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.debug(`we have a folder of ${buildcacheFolder}`);
+            _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`we have a folder of ${buildcacheFolder}`);
             // symbolic links are one thing but are they cross platform? cp should be better?
             const buildcacheBinFolder = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheFolder, 'buildcache', 'bin');
             const buildcacheBinPath = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'buildcache');
