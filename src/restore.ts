@@ -40,7 +40,7 @@ export async function downloadLatest(): Promise<void> {
       repo: 'buildcache'
     })
 
-    console.log(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
+    core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
     const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`
 
     if (!buildCacheReleaseUrl) {

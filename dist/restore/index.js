@@ -9883,7 +9883,7 @@ function downloadLatest() {
                 owner: 'mbitsnbites',
                 repo: 'buildcache'
             });
-            console.log(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`);
+            _actions_core__WEBPACK_IMPORTED_MODULE_1__.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`);
             const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`;
             if (!buildCacheReleaseUrl) {
                 _actions_core__WEBPACK_IMPORTED_MODULE_1__.setFailed('Unable to determine release URL for buildcache');
