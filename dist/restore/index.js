@@ -5213,14 +5213,16 @@ function downloadLatest() {
                 .toString()
                 .match(new RegExp(`https://.*${filename}`));
             if (!buildCacheReleaseUrl) {
-                throw new Error('Unable to determine release URL for buildcache');
+                _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed('Unable to determine release URL for buildcache');
+                return;
             }
             // core.debug(`we have a download url? ${buildCacheReleaseUrl}`)
             const buildcacheReleasePath = yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__.downloadTool(buildCacheReleaseUrl[0]);
             // core.debug(`we have a tool download path of ${buildcacheReleasePath}`)
             const ghWorkSpace = process.env.GITHUB_WORKSPACE;
             if (!ghWorkSpace) {
-                throw new Error('process.env.GITHUB_WORKSPACE not set');
+                _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed('process.env.GITHUB_WORKSPACE not set');
+                return;
             }
             // await io.mkdirP(extractionPath)
             let buildcacheFolder;
@@ -5250,7 +5252,7 @@ function downloadLatest() {
             yield _actions_exec__WEBPACK_IMPORTED_MODULE_5__.exec('buildcache', ['-s']);
         }
         catch (e) {
-            throw new Error(`Unable to download: ${e}`);
+            _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed(`Unable to download: ${e}`);
         }
     });
 }

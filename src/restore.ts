@@ -49,7 +49,8 @@ export async function downloadLatest(): Promise<void> {
       .match(new RegExp(`https://.*${filename}`))
 
     if (!buildCacheReleaseUrl) {
-      throw new Error('Unable to determine release URL for buildcache')
+      core.setFailed('Unable to determine release URL for buildcache')
+      return
     }
     // core.debug(`we have a download url? ${buildCacheReleaseUrl}`)
     const buildcacheReleasePath = await toolcache.downloadTool(
@@ -58,7 +59,8 @@ export async function downloadLatest(): Promise<void> {
     // core.debug(`we have a tool download path of ${buildcacheReleasePath}`)
     const ghWorkSpace = process.env.GITHUB_WORKSPACE
     if (!ghWorkSpace) {
-      throw new Error('process.env.GITHUB_WORKSPACE not set')
+      core.setFailed('process.env.GITHUB_WORKSPACE not set')
+      return
     }
     // await io.mkdirP(extractionPath)
 
@@ -100,7 +102,7 @@ export async function downloadLatest(): Promise<void> {
     await exec.exec('buildcache', ['-c'])
     await exec.exec('buildcache', ['-s'])
   } catch (e) {
-    throw new Error(`Unable to download: ${e}`)
+    core.setFailed(`Unable to download: ${e}`)
   }
 }
 
