@@ -1,10 +1,7 @@
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
-import * as exec from '@actions/exec'
 
-async function printStats(): Promise<void> {
-  await exec.exec('buildcache', ['-s'])
-}
+import { printStats } from './lib'
 
 async function save(): Promise<void> {
   let restoreKey = `buildcache-`
@@ -15,7 +12,12 @@ async function save(): Promise<void> {
   }
 
   const key = restoreKey + new Date().toISOString()
-  const paths = ['.buildcache']
+  const ghWorkSpace = process.env.GITHUB_WORKSPACE
+  if (!ghWorkSpace) {
+    core.setFailed('process.env.GITHUB_WORKSPACE not set')
+    return
+  }
+  const paths = [`${ghWorkSpace}/.buildcache`]
 
   core.info(`Save cache using key "${key}".`)
   try {

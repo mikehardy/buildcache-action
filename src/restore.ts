@@ -4,7 +4,8 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as io from '@actions/io'
 import * as toolcache from '@actions/tool-cache'
-import * as exec from '@actions/exec'
+
+import { getCacheKeys, printConfig, printStats } from './lib'
 
 export async function downloadLatest(): Promise<void> {
   // core.debug('Downloading')
@@ -100,30 +101,24 @@ export async function downloadLatest(): Promise<void> {
       `${ghWorkSpace}/.buildcache/buildcache.log`
     )
     core.addPath(buildcacheBinFolder)
-
-    await exec.exec('buildcache', ['-c'])
-    await exec.exec('buildcache', ['-s'])
   } catch (e) {
     core.setFailed(`Unable to download: ${e}`)
   }
 }
 
 async function restore(): Promise<void> {
-  let restoreKey = `buildcache-`
-
-  const inputKey = core.getInput('key')
-  if (inputKey) {
-    restoreKey += `${inputKey}-`
+  const ghWorkSpace = process.env.GITHUB_WORKSPACE
+  if (!ghWorkSpace) {
+    core.setFailed('process.env.GITHUB_WORKSPACE not set')
+    return
   }
+  const paths = [`${ghWorkSpace}/.buildcache`]
 
-  const restoreKeys = [restoreKey]
-
-  const key = restoreKey + new Date().toISOString()
-
-  const paths = ['.ccache']
+  const { withInput, unique } = getCacheKeys()
+  const restoreKeys = [withInput]
 
   try {
-    const restoredWith = await cache.restoreCache(paths, key, restoreKeys)
+    const restoredWith = await cache.restoreCache(paths, unique, restoreKeys)
     if (restoredWith) {
       core.info(`Restored from cache key "${restoredWith}".`)
     } else {
@@ -137,6 +132,8 @@ async function restore(): Promise<void> {
 async function run(): Promise<void> {
   await downloadLatest()
   await restore()
+  await printConfig()
+  await printStats()
 }
 
 run()

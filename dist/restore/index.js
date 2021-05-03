@@ -61825,18 +61825,6 @@ module.exports = require("zlib");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -61872,26 +61860,68 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
 "use strict";
+// ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "downloadLatest": () => (/* binding */ downloadLatest),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(5622);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(path__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _actions_cache__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(7799);
-/* harmony import */ var _actions_cache__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(_actions_cache__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(2186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(5438);
-/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__nccwpck_require__.n(_actions_github__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _actions_io__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(7436);
-/* harmony import */ var _actions_io__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__nccwpck_require__.n(_actions_io__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _actions_tool_cache__WEBPACK_IMPORTED_MODULE_5__ = __nccwpck_require__(7784);
-/* harmony import */ var _actions_tool_cache__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__nccwpck_require__.n(_actions_tool_cache__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_6__ = __nccwpck_require__(1514);
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__nccwpck_require__.n(_actions_exec__WEBPACK_IMPORTED_MODULE_6__);
+
+// EXPORTS
+__nccwpck_require__.d(__webpack_exports__, {
+  "default": () => (/* binding */ src_restore),
+  "downloadLatest": () => (/* binding */ downloadLatest)
+});
+
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(5622);
+// EXTERNAL MODULE: ./node_modules/@actions/cache/lib/cache.js
+var cache = __nccwpck_require__(7799);
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(2186);
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __nccwpck_require__(5438);
+// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
+var io = __nccwpck_require__(7436);
+// EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
+var tool_cache = __nccwpck_require__(7784);
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __nccwpck_require__(1514);
+;// CONCATENATED MODULE: ./src/lib.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+function printConfig() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield exec.exec('buildcache', ['-c']);
+    });
+}
+function printStats() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield exec.exec('buildcache', ['-s']);
+    });
+}
+function getCacheKeys() {
+    const base = 'buildcache-';
+    const inputKey = core.getInput('key');
+    let withInput = base;
+    if (inputKey) {
+        withInput = `${base}-${inputKey}`;
+    }
+    const unique = withInput + new Date().toISOString();
+    return {
+        base,
+        withInput,
+        unique
+    };
+}
+
+;// CONCATENATED MODULE: ./src/restore.ts
+var restore_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -61908,7 +61938,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 function downloadLatest() {
-    return __awaiter(this, void 0, void 0, function* () {
+    return restore_awaiter(this, void 0, void 0, function* () {
         // core.debug('Downloading')
         const os = process.platform;
         let filename;
@@ -61923,19 +61953,19 @@ function downloadLatest() {
             default:
                 filename = 'buildcache-macos.zip';
         }
-        _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`release filename based on runner os is ${filename}`);
+        core.info(`release filename based on runner os is ${filename}`);
         // Grab the releases page for the for the buildcache project
         try {
-            let githubToken = _actions_core__WEBPACK_IMPORTED_MODULE_2__.getInput('access_token');
+            let githubToken = core.getInput('access_token');
             if (!githubToken || githubToken === '') {
                 githubToken = process.env.GITHUB_TOKEN;
             }
             if (!githubToken) {
-                _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed('No GITHUB_TOKEN available, unable to get buildcache releases.');
+                core.setFailed('No GITHUB_TOKEN available, unable to get buildcache releases.');
                 return;
             }
             // console.log(`we have githubToken ${githubToken}`)
-            const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_3__.getOctokit(githubToken);
+            const octokit = github.getOctokit(githubToken);
             const releaseInfo = yield octokit.repos.getLatestRelease({
                 owner: 'mbitsnbites',
                 repo: 'buildcache'
@@ -61943,84 +61973,84 @@ function downloadLatest() {
             // core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
             const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`;
             if (!buildCacheReleaseUrl) {
-                _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed('Unable to determine release URL for buildcache');
+                core.setFailed('Unable to determine release URL for buildcache');
                 return;
             }
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`we have a download url? ${buildCacheReleaseUrl}`);
-            const buildcacheReleasePath = yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_5__.downloadTool(buildCacheReleaseUrl);
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`we have a tool download path of ${buildcacheReleasePath}`);
+            core.info(`we have a download url? ${buildCacheReleaseUrl}`);
+            const buildcacheReleasePath = yield tool_cache.downloadTool(buildCacheReleaseUrl);
+            core.info(`we have a tool download path of ${buildcacheReleasePath}`);
             const ghWorkSpace = process.env.GITHUB_WORKSPACE;
             if (!ghWorkSpace) {
-                _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed('process.env.GITHUB_WORKSPACE not set');
+                core.setFailed('process.env.GITHUB_WORKSPACE not set');
                 return;
             }
-            yield _actions_io__WEBPACK_IMPORTED_MODULE_4__.mkdirP(ghWorkSpace);
+            yield io.mkdirP(ghWorkSpace);
             let buildcacheFolder;
             switch (os) {
                 case 'linux':
-                    buildcacheFolder = yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_5__.extractTar(buildcacheReleasePath, ghWorkSpace);
+                    buildcacheFolder = yield tool_cache.extractTar(buildcacheReleasePath, ghWorkSpace);
                     break;
                 case 'win32':
                 case 'darwin':
                 default:
-                    buildcacheFolder = yield _actions_tool_cache__WEBPACK_IMPORTED_MODULE_5__.extractZip(buildcacheReleasePath, ghWorkSpace);
+                    buildcacheFolder = yield tool_cache.extractZip(buildcacheReleasePath, ghWorkSpace);
                     break;
             }
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`we have a folder of ${buildcacheFolder}`);
+            core.info(`we have a folder of ${buildcacheFolder}`);
             // symbolic links are one thing but are they cross platform? cp should be better?
-            const buildcacheBinFolder = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheFolder, 'buildcache', 'bin');
-            let buildcacheBinPath = path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'buildcache');
+            const buildcacheBinFolder = external_path_.join(buildcacheFolder, 'buildcache', 'bin');
+            let buildcacheBinPath = external_path_.join(buildcacheBinFolder, 'buildcache');
             if (os === 'win32') {
                 buildcacheBinPath += '.exe';
             }
-            yield _actions_io__WEBPACK_IMPORTED_MODULE_4__.cp(buildcacheBinPath, path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'clang'));
-            yield _actions_io__WEBPACK_IMPORTED_MODULE_4__.cp(buildcacheBinPath, path__WEBPACK_IMPORTED_MODULE_0__.join(buildcacheBinFolder, 'clang++'));
+            yield io.cp(buildcacheBinPath, external_path_.join(buildcacheBinFolder, 'clang'));
+            yield io.cp(buildcacheBinPath, external_path_.join(buildcacheBinFolder, 'clang++'));
             // Now set up the environment by putting our path in there
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.exportVariable('BUILDCACHE_DIR', `${ghWorkSpace}/.buildcache`);
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000');
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.exportVariable('BUILDCACHE_DEBUG', 2);
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.exportVariable('BUILDCACHE_LOG_FILE', `${ghWorkSpace}/.buildcache/buildcache.log`);
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.addPath(buildcacheBinFolder);
-            yield _actions_exec__WEBPACK_IMPORTED_MODULE_6__.exec('buildcache', ['-c']);
-            yield _actions_exec__WEBPACK_IMPORTED_MODULE_6__.exec('buildcache', ['-s']);
+            core.exportVariable('BUILDCACHE_DIR', `${ghWorkSpace}/.buildcache`);
+            core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000');
+            core.exportVariable('BUILDCACHE_DEBUG', 2);
+            core.exportVariable('BUILDCACHE_LOG_FILE', `${ghWorkSpace}/.buildcache/buildcache.log`);
+            core.addPath(buildcacheBinFolder);
         }
         catch (e) {
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed(`Unable to download: ${e}`);
+            core.setFailed(`Unable to download: ${e}`);
         }
     });
 }
 function restore() {
-    return __awaiter(this, void 0, void 0, function* () {
-        let restoreKey = `buildcache-`;
-        const inputKey = _actions_core__WEBPACK_IMPORTED_MODULE_2__.getInput('key');
-        if (inputKey) {
-            restoreKey += `${inputKey}-`;
+    return restore_awaiter(this, void 0, void 0, function* () {
+        const ghWorkSpace = process.env.GITHUB_WORKSPACE;
+        if (!ghWorkSpace) {
+            core.setFailed('process.env.GITHUB_WORKSPACE not set');
+            return;
         }
-        const restoreKeys = [restoreKey];
-        const key = restoreKey + new Date().toISOString();
-        const paths = ['.ccache'];
+        const paths = [`${ghWorkSpace}/.buildcache`];
+        const { withInput, unique } = getCacheKeys();
+        const restoreKeys = [withInput];
         try {
-            const restoredWith = yield _actions_cache__WEBPACK_IMPORTED_MODULE_1__.restoreCache(paths, key, restoreKeys);
+            const restoredWith = yield cache.restoreCache(paths, unique, restoreKeys);
             if (restoredWith) {
-                _actions_core__WEBPACK_IMPORTED_MODULE_2__.info(`Restored from cache key "${restoredWith}".`);
+                core.info(`Restored from cache key "${restoredWith}".`);
             }
             else {
-                _actions_core__WEBPACK_IMPORTED_MODULE_2__.info('No cache found.');
+                core.info('No cache found.');
             }
         }
         catch (e) {
-            _actions_core__WEBPACK_IMPORTED_MODULE_2__.warning(`caching not working: ${e}`);
+            core.warning(`caching not working: ${e}`);
         }
     });
 }
 function run() {
-    return __awaiter(this, void 0, void 0, function* () {
+    return restore_awaiter(this, void 0, void 0, function* () {
         yield downloadLatest();
         yield restore();
+        yield printConfig();
+        yield printStats();
     });
 }
 run();
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (run);
+/* harmony default export */ const src_restore = (run);
 // - uses: actions/cache@v2
 //   path: ~/.buildcache
 //   key: ${{ runner.os }}-v1

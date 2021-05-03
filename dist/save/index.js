@@ -58027,18 +58027,6 @@ module.exports = require("zlib");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -58074,16 +58062,21 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
 "use strict";
+// ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _actions_cache__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7799);
-/* harmony import */ var _actions_cache__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_cache__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(2186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(1514);
-/* harmony import */ var _actions_exec__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(_actions_exec__WEBPACK_IMPORTED_MODULE_2__);
+
+// EXPORTS
+__nccwpck_require__.d(__webpack_exports__, {
+  "default": () => (/* binding */ src_save)
+});
+
+// EXTERNAL MODULE: ./node_modules/@actions/cache/lib/cache.js
+var cache = __nccwpck_require__(7799);
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var lib_core = __nccwpck_require__(2186);
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var lib_exec = __nccwpck_require__(1514);
+;// CONCATENATED MODULE: ./src/lib.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -58095,38 +58088,75 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
-
-function printStats() {
+function printConfig() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield _actions_exec__WEBPACK_IMPORTED_MODULE_2__.exec('buildcache', ['-s']);
+        yield exec.exec('buildcache', ['-c']);
     });
 }
-function save() {
+function printStats() {
     return __awaiter(this, void 0, void 0, function* () {
+        yield lib_exec.exec('buildcache', ['-s']);
+    });
+}
+function getCacheKeys() {
+    const base = 'buildcache-';
+    const inputKey = core.getInput('key');
+    let withInput = base;
+    if (inputKey) {
+        withInput = `${base}-${inputKey}`;
+    }
+    const unique = withInput + new Date().toISOString();
+    return {
+        base,
+        withInput,
+        unique
+    };
+}
+
+;// CONCATENATED MODULE: ./src/save.ts
+var save_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function save() {
+    return save_awaiter(this, void 0, void 0, function* () {
         let restoreKey = `buildcache-`;
-        const inputKey = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('key');
+        const inputKey = lib_core.getInput('key');
         if (inputKey) {
             restoreKey += `${inputKey}-`;
         }
         const key = restoreKey + new Date().toISOString();
-        const paths = ['.buildcache'];
-        _actions_core__WEBPACK_IMPORTED_MODULE_1__.info(`Save cache using key "${key}".`);
+        const ghWorkSpace = process.env.GITHUB_WORKSPACE;
+        if (!ghWorkSpace) {
+            lib_core.setFailed('process.env.GITHUB_WORKSPACE not set');
+            return;
+        }
+        const paths = [`${ghWorkSpace}/.buildcache`];
+        lib_core.info(`Save cache using key "${key}".`);
         try {
-            yield _actions_cache__WEBPACK_IMPORTED_MODULE_0__.saveCache(paths, key);
+            yield cache.saveCache(paths, key);
         }
         catch (e) {
-            _actions_core__WEBPACK_IMPORTED_MODULE_1__.warning(`caching not working: ${e}`);
+            lib_core.warning(`caching not working: ${e}`);
         }
     });
 }
 function run() {
-    return __awaiter(this, void 0, void 0, function* () {
+    return save_awaiter(this, void 0, void 0, function* () {
         yield printStats();
         yield save();
     });
 }
 run();
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (run);
+/* harmony default export */ const src_save = (run);
 
 })();
 
