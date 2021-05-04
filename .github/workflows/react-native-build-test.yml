@@ -1,0 +1,79 @@
+name: 'react-native-build'
+on: # rebuild any PRs and main branch changes
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'releases/*'
+
+jobs:
+  compile:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          all_but_latest: true
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Update Ruby build tools
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: gem update cocoapods
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        name: Yarn Cache
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
+          restore-keys: ${{ runner.os }}-yarn-
+
+      - uses: actions/cache@v2
+        name: Cache Pods
+        id: pods-cache
+        with:
+          path: tests/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
+          restore-keys: ${{ runner.os }}-pods-
+
+      - name: Create React Native Demo
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: npx react-native init demo
+
+      - name: Build iOS App
+        run: |
+          which clang
+          export SKIP_BUNDLING=1
+          set -o pipefail
+          xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace demo/ios/demo.xcworkspace -scheme demo -configuration Debug -sdk iphonesimulator -derivedDataPath demo/ios/build -UseModernBuildSystem=YES",
+        shell: bash
+
+      - name: Upload Buildcache Log
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: buildcache_log
+          path: ./buildcache/buildcache.log
