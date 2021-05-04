@@ -70,7 +70,7 @@ jobs:
       - name: Disable Flipper
         run: |
           cd demo/ios
-          sed -i -e $'s/flipper_post_install/#flipper_post_install/' Podfile
+          sed -i -e $'s/use_flipper/#use_flipper/' Podfile
           pod install
         shell: bash
 
