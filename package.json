@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "build-watch": "tsc-watch --onSuccess \"yarn package\"",
-    "clean": "yarn rimraf __tests__/runner ./dist ./lib",
+    "clean": "yarn rimraf __tests__/runner ./dist ./lib ./demo",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
