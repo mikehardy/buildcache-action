@@ -61875,14 +61875,14 @@ var external_path_ = __nccwpck_require__(5622);
 var cache = __nccwpck_require__(7799);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(2186);
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __nccwpck_require__(1514);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(5438);
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
 var io = __nccwpck_require__(7436);
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
 var tool_cache = __nccwpck_require__(7784);
-// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __nccwpck_require__(1514);
 ;// CONCATENATED MODULE: ./src/lib.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -61930,6 +61930,7 @@ var restore_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -61997,14 +61998,21 @@ function downloadLatest() {
                     break;
             }
             core.info(`we have a folder of ${buildcacheFolder}`);
-            // symbolic links are one thing but are they cross platform? cp should be better?
             const buildcacheBinFolder = external_path_.join(buildcacheFolder, 'buildcache', 'bin');
-            let buildcacheBinPath = external_path_.join(buildcacheBinFolder, 'buildcache');
-            if (os === 'win32') {
-                buildcacheBinPath += '.exe';
+            const buildcacheBinPath = external_path_.join(buildcacheBinFolder, 'buildcache');
+            // windows has different filename and cannot do symbolic links
+            if (os !== 'win32') {
+                yield exec.exec('ln', [
+                    '-s',
+                    buildcacheBinPath,
+                    external_path_.join(buildcacheBinFolder, 'clang')
+                ]);
+                yield exec.exec('ln', [
+                    '-s',
+                    buildcacheBinPath,
+                    external_path_.join(buildcacheBinFolder, 'clang++')
+                ]);
             }
-            yield io.cp(buildcacheBinPath, external_path_.join(buildcacheBinFolder, 'clang'));
-            yield io.cp(buildcacheBinPath, external_path_.join(buildcacheBinFolder, 'clang++'));
             // Now set up the environment by putting our path in there
             core.exportVariable('BUILDCACHE_DIR', `${ghWorkSpace}/.buildcache`);
             core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000');

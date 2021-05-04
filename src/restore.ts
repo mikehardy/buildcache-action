@@ -1,6 +1,7 @@
 import * as path from 'path'
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
+import * as exec from '@actions/exec'
 import * as github from '@actions/github'
 import * as io from '@actions/io'
 import * as toolcache from '@actions/tool-cache'
@@ -83,14 +84,21 @@ export async function downloadLatest(): Promise<void> {
     }
     core.info(`we have a folder of ${buildcacheFolder}`)
 
-    // symbolic links are one thing but are they cross platform? cp should be better?
     const buildcacheBinFolder = path.join(buildcacheFolder, 'buildcache', 'bin')
-    let buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcache')
-    if (os === 'win32') {
-      buildcacheBinPath += '.exe'
+    const buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcache')
+    // windows has different filename and cannot do symbolic links
+    if (os !== 'win32') {
+      await exec.exec('ln', [
+        '-s',
+        buildcacheBinPath,
+        path.join(buildcacheBinFolder, 'clang')
+      ])
+      await exec.exec('ln', [
+        '-s',
+        buildcacheBinPath,
+        path.join(buildcacheBinFolder, 'clang++')
+      ])
     }
-    await io.cp(buildcacheBinPath, path.join(buildcacheBinFolder, 'clang'))
-    await io.cp(buildcacheBinPath, path.join(buildcacheBinFolder, 'clang++'))
 
     // Now set up the environment by putting our path in there
     core.exportVariable('BUILDCACHE_DIR', `${ghWorkSpace}/.buildcache`)
