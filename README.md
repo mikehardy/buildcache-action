@@ -36,6 +36,8 @@ iOS compile performance improvements of approximately 40-50% may be expected whe
 - macos-latest hosted runner, warm cache, react-native-firebase app with all modules: 5min 52s (vs 10min)
 - macos-latest hosted runner, warm cache, react-native 0.64 demo app without Flipper: 2min 55s (vs 5min 20s)
 
+The _first_ build / "cold" cache case will be slower by around 15%, since buildcache does work to determine if it can used the cached object or not. On the cache miss case it then delegates to the compiler and stores the object for the next run.
+
 ## Approach
 
 This action does these things - if they interact poorly with your project, perhaps they could be altered slightly and made to work better if you propose a PR:
