@@ -19,6 +19,10 @@ jobs:
         with:
           fetch-depth: 50
 
+      - uses: ./
+        with:
+          key: ${{ matrix.os }}
+
       - uses: actions/setup-node@v2
         with:
           node-version: 14
@@ -68,7 +72,7 @@ jobs:
           which clang
           export SKIP_BUNDLING=1
           set -o pipefail
-          xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace demo/ios/demo.xcworkspace -scheme demo -configuration Debug -sdk iphonesimulator -derivedDataPath demo/ios/build -UseModernBuildSystem=YES",
+          xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace demo/ios/demo.xcworkspace -scheme demo -configuration Debug -sdk iphonesimulator -derivedDataPath demo/ios/build -UseModernBuildSystem=YES
         shell: bash
 
       - name: Upload Buildcache Log
@@ -76,4 +80,4 @@ jobs:
         if: always()
         with:
           name: buildcache_log
-          path: ./buildcache/buildcache.log
+          path: ./.buildcache/buildcache.log
