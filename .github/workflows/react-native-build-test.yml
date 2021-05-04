@@ -20,8 +20,6 @@ jobs:
           fetch-depth: 50
 
       - uses: ./
-        with:
-          key: ${{ matrix.os }}
 
       - uses: actions/setup-node@v2
         with:

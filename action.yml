@@ -3,7 +3,7 @@ description: 'GitHub Action that installs and configures buildcache to accelerat
 author: 'Mike Hardy'
 inputs:
   key:
-    description: 'An additional key for the cache'
+    description: 'An additional string to use in the cache key'
     required: false
   access_token:
     required: false

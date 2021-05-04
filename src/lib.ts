@@ -22,7 +22,7 @@ export function getCacheKeys(): {
     withInput = `${base}-${inputKey}`
   }
 
-  const unique = withInput + new Date().toISOString()
+  const unique = `${withInput}-${new Date().toISOString()}`
 
   return {
     base,
