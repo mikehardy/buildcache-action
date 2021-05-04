@@ -67,6 +67,13 @@ jobs:
           max_attempts: 3
           command: npx react-native init demo
 
+      - name: Disable Flipper
+        run: |
+          cd demo/ios
+          sed -i -e $'s/flipper_post_install/#flipper_post_install/' Podfile
+          pod install
+        shell: bash
+
       - name: Build iOS App
         run: |
           which clang
