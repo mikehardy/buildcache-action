@@ -63220,7 +63220,7 @@ function uploadBuildLog() {
         if (uploadFlag && uploadFlag === 'true') {
             try {
                 const uploadResponse = yield artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-                core.info(`buildcache: uploaded buildcache.log file (consumed ${uploadResponse.size} of artifact storage)`);
+                core.info(`buildcache: uploaded buildcache.log file (consumed ${uploadResponse.size} bytes of artifact storage)`);
             }
             catch (e) {
                 core.warning(`buildcache: unable to upload buildlog: ${e}`);
