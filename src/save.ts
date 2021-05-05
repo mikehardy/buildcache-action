@@ -49,7 +49,7 @@ async function uploadBuildLog(): Promise<void> {
         options
       )
       core.info(
-        `buildcache uploaded buildcache.log file (consumed ${uploadResponse.size} of artifact storage)`
+        `buildcache: uploaded buildcache.log file (consumed ${uploadResponse.size} of artifact storage)`
       )
     } catch (e) {
       core.warning(`buildcache: unable to upload buildlog: ${e}`)
