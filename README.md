@@ -9,6 +9,9 @@ Use this GitHub Action to accelerate compilation in your GitHub workflows using 
 ```yaml
 - name: buildcache
 - uses: mikehardy/buildcache-action@v1
+    with:
+      upload_buildcache_log: 'false' # optional! defaults to off. Use the uploaded artifact for troubleshooting
+      zero_buildcache_stats: 'true' #optional! default true for per-run stats. Disable for stats across runs
 ```
 
 2. Use the `clang` and `clang++` from `$PATH` now, not fully-specified paths. This is portable as a _normal_ Xcode installation will place `clang` and `clang++` wrappers in `/usr/bin` so the same command will work for normal compilation or in CI.
@@ -49,6 +52,8 @@ This action does these things - if they interact poorly with your project, perha
 - configures the cache for the directory `.buildcache` in your project directory
 - configures buildcache for 500MB of cache storage
 - restores previous caches, and at the end saves the current one
+- turns on `BUILDCACHE_DEBUG=2` for basic troubleshooting and gives you `upload_buildcache_log` param to upload it
+- zeros cache stats by default after restore, so you get clean stats per-run, `zero_buildcache_stats` can disable it
 
 ## Things that don't work
 
