@@ -49,7 +49,7 @@ jobs:
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
+          key: ${{ runner.os }}-yarn-${{ github.run_id }}-v1
           restore-keys: ${{ runner.os }}-yarn
 
       - uses: actions/cache@v2
@@ -57,7 +57,7 @@ jobs:
         id: pods-cache
         with:
           path: demo/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
+          key: ${{ runner.os }}-pods-${{ github.run_id }}-v1
           restore-keys: ${{ runner.os }}-pods
 
       - name: Create React Native Demo
