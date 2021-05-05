@@ -6,7 +6,7 @@ import * as github from '@actions/github'
 import * as io from '@actions/io'
 import * as toolcache from '@actions/tool-cache'
 
-import { getCacheKeys, printConfig, printStats } from './lib'
+import { getCacheKeys, printConfig, printStats, zeroStats } from './lib'
 
 export async function downloadLatest(): Promise<void> {
   // core.debug('Downloading')
@@ -148,8 +148,9 @@ async function run(): Promise<void> {
   const zeroStatsFlag = core.getInput('zero_buildcache_stats')
   if (zeroStatsFlag && zeroStatsFlag === 'true') {
     core.info(
-      'buildcache: zeroing stats - statistics after workflow are for this run only.'
+      'buildcache: zeroing stats - stats display in cleanup task will be for this run only.'
     )
+    await zeroStats()
   }
 }
 
