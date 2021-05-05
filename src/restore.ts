@@ -142,6 +142,12 @@ async function run(): Promise<void> {
   await restore()
   await printConfig()
   await printStats()
+  const zeroStatsFlag = core.getInput('zero_buildcache_stats')
+  if (zeroStatsFlag && zeroStatsFlag === 'true') {
+    core.info(
+      'Zeroing stats - statistics after workflow are for this run only.'
+    )
+  }
 }
 
 run()

@@ -9,6 +9,10 @@ export async function printStats(): Promise<void> {
   await exec.exec('buildcache', ['-s'])
 }
 
+export async function zeroStats(): Promise<void> {
+  await exec.exec('buildcache', ['-z'])
+}
+
 export function getCacheKeys(): {
   base: string
   withInput: string

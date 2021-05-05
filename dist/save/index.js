@@ -63143,6 +63143,11 @@ function printStats() {
         yield lib_exec.exec('buildcache', ['-s']);
     });
 }
+function zeroStats() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield exec.exec('buildcache', ['-z']);
+    });
+}
 function getCacheKeys() {
     const base = 'buildcache-';
     const inputKey = core.getInput('key');

@@ -63479,7 +63479,7 @@ var cache = __nccwpck_require__(7799);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(2186);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var exec = __nccwpck_require__(1514);
+var lib_exec = __nccwpck_require__(1514);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(5438);
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
@@ -63500,12 +63500,17 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function printConfig() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield exec.exec('buildcache', ['-c']);
+        yield lib_exec.exec('buildcache', ['-c']);
     });
 }
 function printStats() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield exec.exec('buildcache', ['-s']);
+        yield lib_exec.exec('buildcache', ['-s']);
+    });
+}
+function zeroStats() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield exec.exec('buildcache', ['-z']);
     });
 }
 function getCacheKeys() {
@@ -63605,12 +63610,12 @@ function downloadLatest() {
             const buildcacheBinPath = external_path_.join(buildcacheBinFolder, 'buildcache');
             // windows has different filename and cannot do symbolic links
             if (os !== 'win32') {
-                yield exec.exec('ln', [
+                yield lib_exec.exec('ln', [
                     '-s',
                     buildcacheBinPath,
                     external_path_.join(buildcacheBinFolder, 'clang')
                 ]);
-                yield exec.exec('ln', [
+                yield lib_exec.exec('ln', [
                     '-s',
                     buildcacheBinPath,
                     external_path_.join(buildcacheBinFolder, 'clang++')
@@ -63658,6 +63663,10 @@ function run() {
         yield restore();
         yield printConfig();
         yield printStats();
+        const zeroStatsFlag = core.getInput('zero_buildcache_stats');
+        if (zeroStatsFlag && zeroStatsFlag === 'true') {
+            core.info('Zeroing stats - statistics after workflow are for this run only.');
+        }
     });
 }
 run();
