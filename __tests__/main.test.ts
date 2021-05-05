@@ -31,7 +31,7 @@ test('test bundled restore runs', () => {
   const options: cp.ExecFileSyncOptions = {
     env: process.env
   }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+  console.log(cp.execFileSync(np, ['--trace-warnings', ip], options).toString())
 
   // assert that the binary is in ghWorkspace/buildcache/bin/buildcache
   // assert that the symbolic links to clang and clang++ are there
@@ -45,5 +45,5 @@ test('test bundled save runs', () => {
   const options: cp.ExecFileSyncOptions = {
     env: process.env
   }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+  console.log(cp.execFileSync(np, ['--trace-warnings', ip], options).toString())
 })
