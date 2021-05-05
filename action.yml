@@ -9,10 +9,14 @@ inputs:
     required: false
     description: 'Your GitHub Access Token to fetch buildcache latest build, defaults to: {{ github.token }}'
     default: '${{ github.token }}'
-  configfile:
+  upload_buildcache_log:
     required: false
-    description: 'path to buildcache config file - https://github.com/mbitsnbites/buildcache/blob/master/doc/configuration.md'
-    default: 'buildcache will rely on default config file or if missing, default values for all settings'
+    default: false
+    description: 'If set to true, any buildcache log create during the run will be uploaded as an artifact'
+  zero_buildcache_stats:
+    required: false
+    default: true
+    description: 'Defaults to true, will print stats on restore, then zero them for run-specific stats on save'
 runs:
   using: 'node12'
   main: 'dist/restore/index.js'
