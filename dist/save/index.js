@@ -63116,7 +63116,7 @@ var artifact_client = __nccwpck_require__(2605);
 // EXTERNAL MODULE: ./node_modules/@actions/cache/lib/cache.js
 var cache = __nccwpck_require__(7799);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(2186);
+var lib_core = __nccwpck_require__(2186);
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
 var io = __nccwpck_require__(7436);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
@@ -63148,11 +63148,25 @@ function zeroStats() {
         yield exec.exec('buildcache', ['-z']);
     });
 }
+function getEnvVar(key, defaultValue) {
+    var _a;
+    core.debug(`buildcache: getEnvVar value of ${key}? '${process.env[key]}'`);
+    return (_a = process.env[key]) !== null && _a !== void 0 ? _a : defaultValue;
+}
+// returns the current access token or fails if undefined
+function getAccessToken() {
+    // Attempt to take GITHUB_TOKEN from env first, otherwise take action.yaml key
+    const githubToken = getEnvVar('GITHUB_TOKEN', core.getInput('access_token'));
+    if (!githubToken || githubToken === '') {
+        throw new Error('GITHUB_TOKEN environment variable or access_token action parameter must be provided');
+    }
+    return githubToken;
+}
 function getCacheKeys() {
     var _a;
     const base = 'buildcache';
     // TODO - remove `key` here and from action.yaml in v2, deprecated as of v1.1.1
-    const inputKey = (_a = core.getInput('cache_key')) !== null && _a !== void 0 ? _a : core.getInput('key');
+    const inputKey = (_a = lib_core.getInput('cache_key')) !== null && _a !== void 0 ? _a : lib_core.getInput('key');
     let withInput = base;
     if (inputKey) {
         withInput = `${base}-${inputKey}`;
@@ -63189,16 +63203,16 @@ function save() {
         const { unique } = getCacheKeys();
         const ghWorkSpace = process.env.GITHUB_WORKSPACE;
         if (!ghWorkSpace) {
-            core.setFailed('process.env.GITHUB_WORKSPACE not set');
+            lib_core.setFailed('process.env.GITHUB_WORKSPACE not set');
             return;
         }
         const paths = [`${ghWorkSpace}/.buildcache`];
-        core.info(`buildcache: saving cache with key "${unique}".`);
+        lib_core.info(`buildcache: saving cache with key "${unique}".`);
         try {
             yield cache.saveCache(paths, unique);
         }
         catch (e) {
-            core.warning(`buildcache: caching not working: ${e}`);
+            lib_core.warning(`buildcache: caching not working: ${e}`);
         }
     });
 }
@@ -63208,7 +63222,7 @@ function uploadBuildLog() {
         const artifactName = 'buildcache_log';
         const ghWorkSpace = process.env.GITHUB_WORKSPACE;
         if (!ghWorkSpace) {
-            core.setFailed('process.env.GITHUB_WORKSPACE not set');
+            lib_core.setFailed('process.env.GITHUB_WORKSPACE not set');
             return;
         }
         const files = [`${ghWorkSpace}/.buildcache/buildcache.log`];
@@ -63216,21 +63230,21 @@ function uploadBuildLog() {
         const options = {
             continueOnError: false
         };
-        const uploadFlag = core.getInput('upload_buildcache_log');
+        const uploadFlag = lib_core.getInput('upload_buildcache_log');
         if (uploadFlag && uploadFlag === 'true') {
             try {
                 const uploadResponse = yield artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-                core.info(`buildcache: uploaded buildcache.log file (consumed ${uploadResponse.size} bytes of artifact storage)`);
+                lib_core.info(`buildcache: uploaded buildcache.log file (consumed ${uploadResponse.size} bytes of artifact storage)`);
             }
             catch (e) {
-                core.warning(`buildcache: unable to upload buildlog: ${e}`);
+                lib_core.warning(`buildcache: unable to upload buildlog: ${e}`);
             }
         }
         try {
             yield io.rmRF('./.buildcache/buildcache.log');
         }
         catch (e) {
-            core.warning(`buildcache: unable to delete buildcache.log ${e}`);
+            lib_core.warning(`buildcache: unable to delete buildcache.log ${e}`);
         }
     });
 }

@@ -6,112 +6,97 @@ import * as github from '@actions/github'
 import * as io from '@actions/io'
 import * as toolcache from '@actions/tool-cache'
 
-import { getCacheKeys, printConfig, printStats, zeroStats } from './lib'
+import {
+  getAccessToken,
+  getCacheKeys,
+  getEnvVar,
+  printConfig,
+  printStats,
+  zeroStats
+} from './lib'
 
-export async function downloadLatest(): Promise<void> {
-  // core.debug('Downloading')
-  const os = process.platform
-  let filename
-  switch (os) {
+// Downloads the latest buildcache release for this OS
+// accessToken is a valid github token to access APIs
+// returns path to the downloaded file
+export async function downloadLatest(accessToken: string): Promise<string> {
+  // Determine correct file name
+  let filename = 'buildcache-macos.zip' // our default
+  switch (process.platform) {
     case 'win32':
       filename = 'buildcache-windows.zip'
       break
     case 'linux':
       filename = 'buildcache-linux.tar.gz'
       break
-    case 'darwin':
-    default:
-      filename = 'buildcache-macos.zip'
   }
-
   core.info(`buildcache: release file based on runner os is ${filename}`)
 
   // Grab the releases page for the for the buildcache project
-  try {
-    let githubToken: string | undefined = core.getInput('access_token')
-    if (!githubToken || githubToken === '') {
-      githubToken = process.env.GITHUB_TOKEN
-    }
-    if (!githubToken) {
-      core.setFailed(
-        'No GITHUB_TOKEN available, unable to get buildcache releases.'
-      )
-      return
-    }
-    // console.log(`we have githubToken ${githubToken}`)
-    const octokit = github.getOctokit(githubToken)
+  const octokit = github.getOctokit(accessToken)
 
-    const releaseInfo = await octokit.repos.getLatestRelease({
-      owner: 'mbitsnbites',
-      repo: 'buildcache'
-    })
+  const releaseInfo = await octokit.repos.getLatestRelease({
+    owner: 'mbitsnbites',
+    repo: 'buildcache'
+  })
 
-    // core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
-    const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`
+  // core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
+  const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`
 
-    if (!buildCacheReleaseUrl) {
-      core.setFailed('Unable to determine release URL for buildcache')
-      return
-    }
-    core.info(`buildcache: installing from ${buildCacheReleaseUrl}`)
-    const buildcacheReleasePath = await toolcache.downloadTool(
-      buildCacheReleaseUrl
-    )
-    core.info(`buildcache: download path ${buildcacheReleasePath}`)
-    const ghWorkSpace = process.env.GITHUB_WORKSPACE
-    if (!ghWorkSpace) {
-      core.setFailed('process.env.GITHUB_WORKSPACE not set')
-      return
-    }
-    await io.mkdirP(ghWorkSpace)
-
-    let buildcacheFolder
-    switch (os) {
-      case 'linux':
-        buildcacheFolder = await toolcache.extractTar(
-          buildcacheReleasePath,
-          ghWorkSpace
-        )
-        break
-      case 'win32':
-      case 'darwin':
-      default:
-        buildcacheFolder = await toolcache.extractZip(
-          buildcacheReleasePath,
-          ghWorkSpace
-        )
-        break
-    }
-    core.info(`buildcache: unpacked folder ${buildcacheFolder}`)
-
-    const buildcacheBinFolder = path.join(buildcacheFolder, 'buildcache', 'bin')
-    const buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcache')
-    // windows has different filename and cannot do symbolic links
-    if (os !== 'win32') {
-      await exec.exec('ln', [
-        '-s',
-        buildcacheBinPath,
-        path.join(buildcacheBinFolder, 'clang')
-      ])
-      await exec.exec('ln', [
-        '-s',
-        buildcacheBinPath,
-        path.join(buildcacheBinFolder, 'clang++')
-      ])
-    }
-
-    // Now set up the environment by putting our path in there
-    core.exportVariable('BUILDCACHE_DIR', `${ghWorkSpace}/.buildcache`)
-    core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000')
-    core.exportVariable('BUILDCACHE_DEBUG', 2)
-    core.exportVariable(
-      'BUILDCACHE_LOG_FILE',
-      `${ghWorkSpace}/.buildcache/buildcache.log`
-    )
-    core.addPath(buildcacheBinFolder)
-  } catch (e) {
-    core.setFailed(`Unable to download: ${e}`)
+  if (!buildCacheReleaseUrl) {
+    throw new Error('Unable to determine release URL for buildcache')
   }
+  core.info(`buildcache: installing from ${buildCacheReleaseUrl}`)
+  const buildcacheReleasePath = await toolcache.downloadTool(
+    buildCacheReleaseUrl
+  )
+  core.info(`buildcache: download path ${buildcacheReleasePath}`)
+  return buildcacheReleasePath
+}
+
+export async function install(
+  sourcePath: string,
+  destPath: string
+): Promise<void> {
+  await io.mkdirP(destPath)
+
+  let buildcacheFolder
+  switch (process.platform) {
+    case 'linux':
+      buildcacheFolder = await toolcache.extractTar(sourcePath, destPath)
+      break
+    case 'win32':
+    case 'darwin':
+    default:
+      buildcacheFolder = await toolcache.extractZip(sourcePath, destPath)
+      break
+  }
+  core.info(`buildcache: unpacked folder ${buildcacheFolder}`)
+
+  const buildcacheBinFolder = path.join(buildcacheFolder, 'buildcache', 'bin')
+  const buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcache')
+  // windows has different filename and cannot do symbolic links
+  if (process.platform !== 'win32') {
+    await exec.exec('ln', [
+      '-s',
+      buildcacheBinPath,
+      path.join(buildcacheBinFolder, 'clang')
+    ])
+    await exec.exec('ln', [
+      '-s',
+      buildcacheBinPath,
+      path.join(buildcacheBinFolder, 'clang++')
+    ])
+  }
+
+  // Now set up the environment by putting our path in there
+  core.exportVariable('BUILDCACHE_DIR', `${destPath}/.buildcache`)
+  core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000')
+  core.exportVariable('BUILDCACHE_DEBUG', 2)
+  core.exportVariable(
+    'BUILDCACHE_LOG_FILE',
+    `${destPath}/.buildcache/buildcache.log`
+  )
+  core.addPath(buildcacheBinFolder)
 }
 
 async function restore(): Promise<void> {
@@ -141,16 +126,28 @@ async function restore(): Promise<void> {
 }
 
 async function run(): Promise<void> {
-  await downloadLatest()
-  await restore()
-  await printConfig()
-  await printStats()
-  const zeroStatsFlag = core.getInput('zero_buildcache_stats')
-  if (zeroStatsFlag && zeroStatsFlag === 'true') {
-    core.info(
-      'buildcache: zeroing stats - stats display in cleanup task will be for this run only.'
-    )
-    await zeroStats()
+  try {
+    const downloadPath = await downloadLatest(getAccessToken())
+
+    // Our install location, not configurable yet
+    const installPath = getEnvVar('GITHUB_WORKSPACE', '')
+    if (installPath === '') {
+      throw new Error('process.env.GITHUB_WORKSPACE not set')
+    }
+    await install(downloadPath, installPath)
+    await restore()
+    await printConfig()
+    await printStats()
+    const zeroStatsFlag = core.getInput('zero_buildcache_stats')
+    if (zeroStatsFlag && zeroStatsFlag === 'true') {
+      core.info(
+        'buildcache: zeroing stats - stats display in cleanup task will be for this run only.'
+      )
+      await zeroStats()
+    }
+  } catch (e) {
+    core.error(`buildcache: failure during restore: ${e}`)
+    core.setFailed(e)
   }
 }
 

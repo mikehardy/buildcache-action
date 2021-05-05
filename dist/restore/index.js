@@ -63469,7 +63469,8 @@ __nccwpck_require__.r(__webpack_exports__);
 // EXPORTS
 __nccwpck_require__.d(__webpack_exports__, {
   "default": () => (/* binding */ src_restore),
-  "downloadLatest": () => (/* binding */ downloadLatest)
+  "downloadLatest": () => (/* binding */ downloadLatest),
+  "install": () => (/* binding */ install)
 });
 
 // EXTERNAL MODULE: external "path"
@@ -63513,6 +63514,20 @@ function zeroStats() {
         yield exec.exec('buildcache', ['-z']);
     });
 }
+function getEnvVar(key, defaultValue) {
+    var _a;
+    core.debug(`buildcache: getEnvVar value of ${key}? '${process.env[key]}'`);
+    return (_a = process.env[key]) !== null && _a !== void 0 ? _a : defaultValue;
+}
+// returns the current access token or fails if undefined
+function getAccessToken() {
+    // Attempt to take GITHUB_TOKEN from env first, otherwise take action.yaml key
+    const githubToken = getEnvVar('GITHUB_TOKEN', core.getInput('access_token'));
+    if (!githubToken || githubToken === '') {
+        throw new Error('GITHUB_TOKEN environment variable or access_token action parameter must be provided');
+    }
+    return githubToken;
+}
 function getCacheKeys() {
     var _a;
     const base = 'buildcache';
@@ -63552,91 +63567,75 @@ var restore_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _
 
 
 
-function downloadLatest() {
+// Downloads the latest buildcache release for this OS
+// accessToken is a valid github token to access APIs
+// returns path to the downloaded file
+function downloadLatest(accessToken) {
     return restore_awaiter(this, void 0, void 0, function* () {
-        // core.debug('Downloading')
-        const os = process.platform;
-        let filename;
-        switch (os) {
+        // Determine correct file name
+        let filename = 'buildcache-macos.zip'; // our default
+        switch (process.platform) {
             case 'win32':
                 filename = 'buildcache-windows.zip';
                 break;
             case 'linux':
                 filename = 'buildcache-linux.tar.gz';
                 break;
-            case 'darwin':
-            default:
-                filename = 'buildcache-macos.zip';
         }
         core.info(`buildcache: release file based on runner os is ${filename}`);
         // Grab the releases page for the for the buildcache project
-        try {
-            let githubToken = core.getInput('access_token');
-            if (!githubToken || githubToken === '') {
-                githubToken = process.env.GITHUB_TOKEN;
-            }
-            if (!githubToken) {
-                core.setFailed('No GITHUB_TOKEN available, unable to get buildcache releases.');
-                return;
-            }
-            // console.log(`we have githubToken ${githubToken}`)
-            const octokit = github.getOctokit(githubToken);
-            const releaseInfo = yield octokit.repos.getLatestRelease({
-                owner: 'mbitsnbites',
-                repo: 'buildcache'
-            });
-            // core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
-            const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`;
-            if (!buildCacheReleaseUrl) {
-                core.setFailed('Unable to determine release URL for buildcache');
-                return;
-            }
-            core.info(`buildcache: installing from ${buildCacheReleaseUrl}`);
-            const buildcacheReleasePath = yield tool_cache.downloadTool(buildCacheReleaseUrl);
-            core.info(`buildcache: download path ${buildcacheReleasePath}`);
-            const ghWorkSpace = process.env.GITHUB_WORKSPACE;
-            if (!ghWorkSpace) {
-                core.setFailed('process.env.GITHUB_WORKSPACE not set');
-                return;
-            }
-            yield io.mkdirP(ghWorkSpace);
-            let buildcacheFolder;
-            switch (os) {
-                case 'linux':
-                    buildcacheFolder = yield tool_cache.extractTar(buildcacheReleasePath, ghWorkSpace);
-                    break;
-                case 'win32':
-                case 'darwin':
-                default:
-                    buildcacheFolder = yield tool_cache.extractZip(buildcacheReleasePath, ghWorkSpace);
-                    break;
-            }
-            core.info(`buildcache: unpacked folder ${buildcacheFolder}`);
-            const buildcacheBinFolder = external_path_.join(buildcacheFolder, 'buildcache', 'bin');
-            const buildcacheBinPath = external_path_.join(buildcacheBinFolder, 'buildcache');
-            // windows has different filename and cannot do symbolic links
-            if (os !== 'win32') {
-                yield exec.exec('ln', [
-                    '-s',
-                    buildcacheBinPath,
-                    external_path_.join(buildcacheBinFolder, 'clang')
-                ]);
-                yield exec.exec('ln', [
-                    '-s',
-                    buildcacheBinPath,
-                    external_path_.join(buildcacheBinFolder, 'clang++')
-                ]);
-            }
-            // Now set up the environment by putting our path in there
-            core.exportVariable('BUILDCACHE_DIR', `${ghWorkSpace}/.buildcache`);
-            core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000');
-            core.exportVariable('BUILDCACHE_DEBUG', 2);
-            core.exportVariable('BUILDCACHE_LOG_FILE', `${ghWorkSpace}/.buildcache/buildcache.log`);
-            core.addPath(buildcacheBinFolder);
+        const octokit = github.getOctokit(accessToken);
+        const releaseInfo = yield octokit.repos.getLatestRelease({
+            owner: 'mbitsnbites',
+            repo: 'buildcache'
+        });
+        // core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
+        const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`;
+        if (!buildCacheReleaseUrl) {
+            throw new Error('Unable to determine release URL for buildcache');
         }
-        catch (e) {
-            core.setFailed(`Unable to download: ${e}`);
+        core.info(`buildcache: installing from ${buildCacheReleaseUrl}`);
+        const buildcacheReleasePath = yield tool_cache.downloadTool(buildCacheReleaseUrl);
+        core.info(`buildcache: download path ${buildcacheReleasePath}`);
+        return buildcacheReleasePath;
+    });
+}
+function install(sourcePath, destPath) {
+    return restore_awaiter(this, void 0, void 0, function* () {
+        yield io.mkdirP(destPath);
+        let buildcacheFolder;
+        switch (process.platform) {
+            case 'linux':
+                buildcacheFolder = yield tool_cache.extractTar(sourcePath, destPath);
+                break;
+            case 'win32':
+            case 'darwin':
+            default:
+                buildcacheFolder = yield tool_cache.extractZip(sourcePath, destPath);
+                break;
         }
+        core.info(`buildcache: unpacked folder ${buildcacheFolder}`);
+        const buildcacheBinFolder = external_path_.join(buildcacheFolder, 'buildcache', 'bin');
+        const buildcacheBinPath = external_path_.join(buildcacheBinFolder, 'buildcache');
+        // windows has different filename and cannot do symbolic links
+        if (process.platform !== 'win32') {
+            yield exec.exec('ln', [
+                '-s',
+                buildcacheBinPath,
+                external_path_.join(buildcacheBinFolder, 'clang')
+            ]);
+            yield exec.exec('ln', [
+                '-s',
+                buildcacheBinPath,
+                external_path_.join(buildcacheBinFolder, 'clang++')
+            ]);
+        }
+        // Now set up the environment by putting our path in there
+        core.exportVariable('BUILDCACHE_DIR', `${destPath}/.buildcache`);
+        core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000');
+        core.exportVariable('BUILDCACHE_DEBUG', 2);
+        core.exportVariable('BUILDCACHE_LOG_FILE', `${destPath}/.buildcache/buildcache.log`);
+        core.addPath(buildcacheBinFolder);
     });
 }
 function restore() {
@@ -63666,34 +63665,31 @@ function restore() {
 }
 function run() {
     return restore_awaiter(this, void 0, void 0, function* () {
-        yield downloadLatest();
-        yield restore();
-        yield printConfig();
-        yield printStats();
-        const zeroStatsFlag = core.getInput('zero_buildcache_stats');
-        if (zeroStatsFlag && zeroStatsFlag === 'true') {
-            core.info('buildcache: zeroing stats - stats display in cleanup task will be for this run only.');
-            yield zeroStats();
+        try {
+            const downloadPath = yield downloadLatest(getAccessToken());
+            // Our install location, not configurable yet
+            const installPath = getEnvVar('GITHUB_WORKSPACE', '');
+            if (installPath === '') {
+                throw new Error('process.env.GITHUB_WORKSPACE not set');
+            }
+            yield install(downloadPath, installPath);
+            yield restore();
+            yield printConfig();
+            yield printStats();
+            const zeroStatsFlag = core.getInput('zero_buildcache_stats');
+            if (zeroStatsFlag && zeroStatsFlag === 'true') {
+                core.info('buildcache: zeroing stats - stats display in cleanup task will be for this run only.');
+                yield zeroStats();
+            }
+        }
+        catch (e) {
+            core.error(`buildcache: failure during restore: ${e}`);
+            core.setFailed(e);
         }
     });
 }
 run();
 /* harmony default export */ const src_restore = (run);
-// - uses: actions/cache@v2
-//   path: ~/.buildcache
-//   key: ${{ runner.os }}-v1
-//   pwd
-//   cd $HOME
-//   ls -la
-//   ln -s $HOME/buildcache/bin/buildcache $HOME/buildcache/bin/clang
-//   ln -s $HOME/buildcache/bin/buildcache $HOME/buildcache/bin/clang++
-//   echo "BUILDCACHE_MAX_CACHE_SIZE=525288000" >> $GITHUB_ENV
-//   echo "BUILDCACHE_DEBUG=2" >> $GITHUB_ENV
-//   echo "BUILDCACHE_LOG_FILE=$HOME/buildcache.log" >> $GITHUB_ENV
-//   echo $HOME/buildcache/bin >> $GITHUB_PATH
-//   $HOME/buildcache/bin/buildcache -c
-//   $HOME/buildcache/bin/buildcache -s
-//   which clang
 
 })();
 
