@@ -10,6 +10,12 @@ jobs:
   compile:
     runs-on: macos-latest
     timeout-minutes: 60
+    env:
+      BUILDCACHE_DIR: ../custom_buildcache_dir # will override default location
+      BUILDCACHE_LOG_FILE: ../custom_buildcache.log # will override default location
+      BUILDCACHE_DEBUG: 3 # will override default of 2
+      BUILDCACHE_MAX_CACHE_SIZE: 234567890 # will override default of 500000000
+      BUILDCACHE_MAX_LOCAL_ENTRY_SIZE: 34567890 # Not used by buildache-action, but will pass through...
     steps:
       - uses: styfle/cancel-workflow-action@0.9.0
         with:
@@ -21,8 +27,9 @@ jobs:
 
       - uses: ./
         with:
-          cache_key: react-native-compile
-          upload_buildcache_log: true
+          install_dir: ../custom_install_location # demonstrate override of default location
+          cache_key: react-native-compile # demonstrate putting custom key component in cache key
+          upload_buildcache_log: true # demonstrate buildcache upload
 
       - uses: actions/setup-node@v2
         with:
