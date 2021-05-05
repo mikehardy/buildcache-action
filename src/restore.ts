@@ -61,13 +61,11 @@ export async function install(sourcePath: string): Promise<void> {
   let buildcacheFolder
   switch (process.platform) {
     case 'linux':
-      await io.rmRF(path.join(destPath, 'buildcache'))
       buildcacheFolder = await toolcache.extractTar(sourcePath, destPath)
       break
     case 'win32':
     case 'darwin':
     default:
-      await io.rmRF(path.join(destPath, 'buildcache'))
       buildcacheFolder = await toolcache.extractZip(sourcePath, destPath)
       break
   }

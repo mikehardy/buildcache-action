@@ -8,6 +8,8 @@ import { getInstallDir, getAccessToken } from '../src/lib'
 
 // import { downloadLatest } from '../lib/restore'
 
+jest.setTimeout(40000)
+
 const cachePath = path.join(__dirname, 'runner', 'CACHE')
 const tempPath = path.join(__dirname, 'runner', 'TEMP')
 const ghWorkspace = path.join(__dirname, 'runner', 'WORKSPACE')
@@ -27,13 +29,25 @@ beforeEach(() => {
 //   await expect(downloadLatest()).rejects.toThrow('Unable to download')
 // })
 
-test('test bundled restore runs', () => {
+function wait(time: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+    }, time)
+  })
+}
+
+test('test bundled restore runs', async () => {
   const np = process.execPath
   const ip = path.join(__dirname, '..', 'dist', 'restore', 'index.js')
   const options: cp.ExecFileSyncOptions = {
     env: process.env
   }
   console.log(cp.execFileSync(np, ['--trace-warnings', ip], options).toString())
+
+  // sigh
+  await Promise.resolve()
+  await wait(20000)
 
   // assert that the binary is in ghWorkspace/buildcache/bin/buildcache
   // assert that the symbolic links to clang and clang++ are there
@@ -57,4 +71,8 @@ test('test bundled save runs', async () => {
     env
   }
   console.log(cp.execFileSync(np, ['--trace-warnings', ip], options).toString())
+
+  // sigh
+  await Promise.resolve()
+  await wait(20000)
 })

@@ -15,7 +15,7 @@ inputs:
   install_dir:
     required: false
     description: 'Where to install buildcache, GITHUB_WORKSPACE by default. Will be exported on PATH'
-    default: $GITHUB_WORKSPACE
+    default: '${{ github.workspace }}'
   upload_buildcache_log:
     required: false
     default: false

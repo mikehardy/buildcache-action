@@ -63623,13 +63623,11 @@ function install(sourcePath) {
         let buildcacheFolder;
         switch (process.platform) {
             case 'linux':
-                yield io.rmRF(external_path_.join(destPath, 'buildcache'));
                 buildcacheFolder = yield tool_cache.extractTar(sourcePath, destPath);
                 break;
             case 'win32':
             case 'darwin':
             default:
-                yield io.rmRF(external_path_.join(destPath, 'buildcache'));
                 buildcacheFolder = yield tool_cache.extractZip(sourcePath, destPath);
                 break;
         }
