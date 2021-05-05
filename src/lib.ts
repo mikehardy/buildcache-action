@@ -20,7 +20,8 @@ export function getCacheKeys(): {
 } {
   const base = 'buildcache-'
 
-  const inputKey = core.getInput('key')
+  // TODO - remove `key` here and from action.yaml in v2, deprecated as of v1.1.1
+  const inputKey = core.getInput('cache_key') ?? core.getInput('key')
   let withInput = base
   if (inputKey) {
     withInput = `${base}-${inputKey}`

@@ -21,6 +21,7 @@ jobs:
 
       - uses: ./
         with:
+          cache_key: react-native-compile
           upload_buildcache_log: true
 
       - uses: actions/setup-node@v2

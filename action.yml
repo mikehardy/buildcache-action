@@ -2,8 +2,11 @@ name: 'buildcache-action'
 description: 'GitHub Action that installs and configures buildcache to accelerate compilation'
 author: 'Mike Hardy'
 inputs:
-  key:
+  cache_key:
     description: 'An additional string to use in the cache key'
+    required: false
+  key:
+    description: 'deprecated: synonym for `cache_key`, use cache_key. Will be removed in v2'
     required: false
   access_token:
     required: false

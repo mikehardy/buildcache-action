@@ -26,4 +26,4 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          key: ${{ matrix.os }}
+          cache_key: build-test-${{ matrix.os }}

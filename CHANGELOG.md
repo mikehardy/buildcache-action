@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.1
+
+- chore: deprecate `key`, encourage use of less ambiguous `cache_key`
+
 ## 1.1.0
 
 - feat: add input param to zero stats before a run, defaults to true

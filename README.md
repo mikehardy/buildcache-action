@@ -10,6 +10,7 @@ Use this GitHub Action to accelerate compilation in your GitHub workflows using 
 - name: buildcache
 - uses: mikehardy/buildcache-action@v1
     with:
+      cache_key: ${{ matrix.os }} # optional! maybe you want separate buildcache for separate workflows?
       upload_buildcache_log: 'false' # optional! defaults to off. Use the uploaded artifact for troubleshooting
       zero_buildcache_stats: 'true' #optional! default true for per-run stats. Disable for stats across runs
 ```
