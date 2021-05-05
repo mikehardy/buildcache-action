@@ -52,6 +52,14 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ github.run_id }}-v1
           restore-keys: ${{ runner.os }}-yarn
 
+      - name: Create React Native Demo
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: npx react-native init --skip-install demo
+
       - uses: actions/cache@v2
         name: Cache Pods
         id: pods-cache
@@ -60,20 +68,21 @@ jobs:
           key: ${{ runner.os }}-pods-${{ github.run_id }}-v1
           restore-keys: ${{ runner.os }}-pods
 
-      - name: Create React Native Demo
+      - name: Install Demo dependencies
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: npx react-native init demo
+          command: pushd demo && yarn
 
-      - name: Disable Flipper
-        run: |
-          cd demo/ios
-          sed -i -e $'s/use_flipper/#use_flipper/' Podfile
-          pod install
-        shell: bash
+      - name: Disable Flipper / Install Pods
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: pushd demo/ios && sed -i -e $'s/use_flipper/#use_flipper/' Podfile && pod install
 
       - name: Build iOS App
         run: |
