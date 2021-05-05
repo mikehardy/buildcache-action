@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
+import * as io from '@actions/io'
 
 export async function printConfig(): Promise<void> {
   await exec.exec('buildcache', ['-c'])
@@ -38,6 +39,18 @@ export function getAccessToken(): string {
     )
   }
   return githubToken
+}
+
+export async function getInstallDir(): Promise<string> {
+  let installDir = core.getInput('install_dir')
+  if (!installDir || installDir === '') {
+    installDir = getEnvVar('GITHUB_WORKSPACE', '')
+  }
+  if (!installDir || installDir === '') {
+    throw new Error('install_dir not specified or empty')
+  }
+  await io.mkdirP(installDir)
+  return installDir
 }
 
 export function getCacheKeys(): {

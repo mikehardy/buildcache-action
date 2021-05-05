@@ -3,6 +3,8 @@ import * as process from 'process'
 import * as cp from 'child_process'
 import * as path from 'path'
 import * as rimraf from 'rimraf'
+import { downloadLatest, install } from '../src/restore'
+import { getInstallDir, getAccessToken } from '../src/lib'
 
 // import { downloadLatest } from '../lib/restore'
 
@@ -39,11 +41,20 @@ test('test bundled restore runs', () => {
   // assert that config items are in GITHUB_ENV
 })
 
-test('test bundled save runs', () => {
+test('test bundled save runs', async () => {
   const np = process.execPath
   const ip = path.join(__dirname, '..', 'dist', 'save', 'index.js')
+
+  // In a unit test scenario @actions/core has not prepended our installed binary to the path
+  // We need to install the path ourselves
+  const installDir = await getInstallDir()
+  const downloadPath = await downloadLatest(getAccessToken())
+  await install(downloadPath)
+
+  const env = process.env
+  env['PATH'] = `${installDir}/buildcache/bin:${env['PATH']}`
   const options: cp.ExecFileSyncOptions = {
-    env: process.env
+    env
   }
   console.log(cp.execFileSync(np, ['--trace-warnings', ip], options).toString())
 })

@@ -63499,6 +63499,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
+
 function printConfig() {
     return __awaiter(this, void 0, void 0, function* () {
         yield exec.exec('buildcache', ['-c']);
@@ -63529,6 +63530,19 @@ function getAccessToken() {
         throw new Error('GITHUB_TOKEN environment variable or access_token action parameter must be provided');
     }
     return githubToken;
+}
+function getInstallDir() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let installDir = core.getInput('install_dir');
+        if (!installDir || installDir === '') {
+            installDir = getEnvVar('GITHUB_WORKSPACE', '');
+        }
+        if (!installDir || installDir === '') {
+            throw new Error('install_dir not specified or empty');
+        }
+        yield io.mkdirP(installDir);
+        return installDir;
+    });
 }
 function getCacheKeys() {
     var _a;
@@ -63602,17 +63616,20 @@ function downloadLatest(accessToken) {
         return buildcacheReleasePath;
     });
 }
-function install(sourcePath, destPath) {
+function install(sourcePath) {
     return restore_awaiter(this, void 0, void 0, function* () {
+        const destPath = yield getInstallDir();
         yield io.mkdirP(destPath);
         let buildcacheFolder;
         switch (process.platform) {
             case 'linux':
+                yield io.rmRF(external_path_.join(destPath, 'buildcache'));
                 buildcacheFolder = yield tool_cache.extractTar(sourcePath, destPath);
                 break;
             case 'win32':
             case 'darwin':
             default:
+                yield io.rmRF(external_path_.join(destPath, 'buildcache'));
                 buildcacheFolder = yield tool_cache.extractZip(sourcePath, destPath);
                 break;
         }
@@ -63632,12 +63649,17 @@ function install(sourcePath, destPath) {
                 external_path_.join(buildcacheBinFolder, 'clang++')
             ]);
         }
-        // Now set up the environment by putting our path in there
-        core.exportVariable('BUILDCACHE_DIR', `${destPath}/.buildcache`);
-        core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000');
-        core.exportVariable('BUILDCACHE_DEBUG', 2);
-        core.exportVariable('BUILDCACHE_LOG_FILE', `${destPath}/.buildcache/buildcache.log`);
         core.addPath(buildcacheBinFolder);
+    });
+}
+function configure() {
+    return restore_awaiter(this, void 0, void 0, function* () {
+        const installDir = yield getInstallDir();
+        // Now set up the environment by putting our path in there
+        core.exportVariable('BUILDCACHE_DIR', getEnvVar('BUILDCACHE_DIR', `${installDir}/.buildcache`));
+        core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', getEnvVar('BUILDCACHE_MAX_CACHE_SIZE', '500000000'));
+        core.exportVariable('BUILDCACHE_DEBUG', getEnvVar('BUILDCACHE_DEBUG', '2'));
+        core.exportVariable('BUILDCACHE_LOG_FILE', getEnvVar('BUILDCACHE_LOG_FILE', `${installDir}/.buildcache/buildcache.log`));
     });
 }
 function restore() {
@@ -63669,12 +63691,8 @@ function run() {
     return restore_awaiter(this, void 0, void 0, function* () {
         try {
             const downloadPath = yield downloadLatest(getAccessToken());
-            // Our install location, not configurable yet
-            const installPath = getEnvVar('GITHUB_WORKSPACE', '');
-            if (installPath === '') {
-                throw new Error('process.env.GITHUB_WORKSPACE not set');
-            }
-            yield install(downloadPath, installPath);
+            yield install(downloadPath);
+            yield configure();
             yield restore();
             yield printConfig();
             yield printStats();

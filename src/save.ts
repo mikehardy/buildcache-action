@@ -1,19 +1,17 @@
+import * as path from 'path'
 import * as artifact from '@actions/artifact'
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
 import * as io from '@actions/io'
 
-import { getCacheKeys, printStats } from './lib'
+import { getCacheKeys, getEnvVar, getInstallDir, printStats } from './lib'
 
 async function save(): Promise<void> {
   const { unique } = getCacheKeys()
 
-  const ghWorkSpace = process.env.GITHUB_WORKSPACE
-  if (!ghWorkSpace) {
-    core.setFailed('process.env.GITHUB_WORKSPACE not set')
-    return
-  }
-  const paths = [`${ghWorkSpace}/.buildcache`]
+  const installDir = await getInstallDir()
+  const cacheDir = getEnvVar('BUILDCACHE_DIR', `${installDir}/.buildcache`)
+  const paths = [cacheDir]
 
   core.info(`buildcache: saving cache with key "${unique}".`)
   try {
@@ -27,14 +25,19 @@ async function uploadBuildLog(): Promise<void> {
   const artifactClient = artifact.create()
   const artifactName = 'buildcache_log'
 
-  const ghWorkSpace = process.env.GITHUB_WORKSPACE
-  if (!ghWorkSpace) {
-    core.setFailed('process.env.GITHUB_WORKSPACE not set')
-    return
-  }
-
-  const files = [`${ghWorkSpace}/.buildcache/buildcache.log`]
-  const rootDirectory = `${ghWorkSpace}/.buildcache/`
+  const installDir = await getInstallDir()
+  const cacheDir = getEnvVar(
+    'BUILDCACHE_DIR',
+    path.join(installDir, '.buildcache')
+  )
+  const logFile = getEnvVar(
+    'BUILDCACHE_LOG_FILE',
+    path.join(cacheDir, 'buildcache.log')
+  )
+  const files = [logFile]
+  // FIXME this won't strip the leading directories off custom log file locations correctly!
+  // It still has the built in assumption that the log file is located inside the cache directory
+  const rootDirectory = cacheDir
   const options = {
     continueOnError: false
   }
@@ -56,7 +59,7 @@ async function uploadBuildLog(): Promise<void> {
     }
   }
   try {
-    await io.rmRF('./.buildcache/buildcache.log')
+    await io.rmRF(logFile)
   } catch (e) {
     core.warning(`buildcache: unable to delete buildcache.log ${e}`)
   }

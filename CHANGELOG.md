@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.2.0
+
+- feat: allow complete config control via environment variables defined/used by buildcache
+
 ## 1.1.1
 
 - fix: all log from action prefixed with `buildcache: `

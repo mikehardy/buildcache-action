@@ -4,15 +4,27 @@ Use this GitHub Action to accelerate compilation in your GitHub workflows using 
 
 ## Usage
 
-1. Include the action in your workflow:
+1. Include the action in your workflow, and just go with the defaults:
 
 ```yaml
 - name: buildcache
 - uses: mikehardy/buildcache-action@v1
+```
+
+Or if you want to specify everything imaginable, here is the full explanation:
+
+```yaml
+- name: buildcache
+- uses: mikehardy/buildcache-action@v1
+   env:
+     BUILDCACHE_DIR: $GITHUB_WORKSPACE/.buildcache # optional! this is the default, but cache where you like
+     BUILDCACHE_DEBUG: 2 # optional! by default we log cache misses, so you can upload a useful log if you like
+     BUILDCACHE_MAX_CACHE_SIZE: 500000000 # optional! defaults to 500MB of cache maximum
+     BUILDCACHE_LOG_FILE: $GITHUB_WORKSPACE/.buildcache/buildcache.log # optional! put the log file where you like
    with:
      cache_key: ${{ matrix.os }} # optional! maybe you want separate buildcache for separate workflows?
      upload_buildcache_log: 'false' # optional! defaults to off. Use the uploaded artifact for troubleshooting
-     zero_buildcache_stats: 'true' #optional! default true for per-run stats. Disable for stats across runs
+     zero_buildcache_stats: 'true' # optional! default true for per-run stats. Disable for stats across runs
 ```
 
 2. Use the `clang` and `clang++` from `$PATH` now, not fully-specified paths. This is portable as a _normal_ Xcode installation will place `clang` and `clang++` wrappers in `/usr/bin` so the same command will work for normal compilation or in CI.
@@ -51,10 +63,11 @@ This action does these things - if they interact poorly with your project, perha
 - installs it in your project directory as `buiildcache/bin/buildcache`
 - makes symoblic links from `buildcache` to `clang` and `clang++`
 - adds that directory to your `$GITHUB_PATH` for future steps
-- configures the cache for the directory `.buildcache` in your project directory
-- configures buildcache for 500MB of cache storage
+- configures the cache directory (defaults to `.buildcache` in your project directory if not set via environment variable)
+- configures buildcache storage limit (defaults to 500MB if not set via environment variable)
 - restores previous caches, and at the end saves the current one
-- turns on `BUILDCACHE_DEBUG=2` for basic troubleshooting and gives you `upload_buildcache_log` param to upload it
+- turns on `BUILDCACHE_DEBUG=2` if not set in environment variable
+- will upload debug log if `BUILDCACHE_DEBUG` is not -1 and if `upload_buildcache_log` is true
 - zeros cache stats by default after restore, so you get clean stats per-run, `zero_buildcache_stats` can disable it
 
 ## Things that don't work

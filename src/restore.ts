@@ -10,6 +10,7 @@ import {
   getAccessToken,
   getCacheKeys,
   getEnvVar,
+  getInstallDir,
   printConfig,
   printStats,
   zeroStats
@@ -53,20 +54,20 @@ export async function downloadLatest(accessToken: string): Promise<string> {
   return buildcacheReleasePath
 }
 
-export async function install(
-  sourcePath: string,
-  destPath: string
-): Promise<void> {
+export async function install(sourcePath: string): Promise<void> {
+  const destPath = await getInstallDir()
   await io.mkdirP(destPath)
 
   let buildcacheFolder
   switch (process.platform) {
     case 'linux':
+      await io.rmRF(path.join(destPath, 'buildcache'))
       buildcacheFolder = await toolcache.extractTar(sourcePath, destPath)
       break
     case 'win32':
     case 'darwin':
     default:
+      await io.rmRF(path.join(destPath, 'buildcache'))
       buildcacheFolder = await toolcache.extractZip(sourcePath, destPath)
       break
   }
@@ -87,16 +88,26 @@ export async function install(
       path.join(buildcacheBinFolder, 'clang++')
     ])
   }
+  core.addPath(buildcacheBinFolder)
+}
+
+async function configure(): Promise<void> {
+  const installDir = await getInstallDir()
 
   // Now set up the environment by putting our path in there
-  core.exportVariable('BUILDCACHE_DIR', `${destPath}/.buildcache`)
-  core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', '500000000')
-  core.exportVariable('BUILDCACHE_DEBUG', 2)
+  core.exportVariable(
+    'BUILDCACHE_DIR',
+    getEnvVar('BUILDCACHE_DIR', `${installDir}/.buildcache`)
+  )
+  core.exportVariable(
+    'BUILDCACHE_MAX_CACHE_SIZE',
+    getEnvVar('BUILDCACHE_MAX_CACHE_SIZE', '500000000')
+  )
+  core.exportVariable('BUILDCACHE_DEBUG', getEnvVar('BUILDCACHE_DEBUG', '2'))
   core.exportVariable(
     'BUILDCACHE_LOG_FILE',
-    `${destPath}/.buildcache/buildcache.log`
+    getEnvVar('BUILDCACHE_LOG_FILE', `${installDir}/.buildcache/buildcache.log`)
   )
-  core.addPath(buildcacheBinFolder)
 }
 
 async function restore(): Promise<void> {
@@ -128,13 +139,8 @@ async function restore(): Promise<void> {
 async function run(): Promise<void> {
   try {
     const downloadPath = await downloadLatest(getAccessToken())
-
-    // Our install location, not configurable yet
-    const installPath = getEnvVar('GITHUB_WORKSPACE', '')
-    if (installPath === '') {
-      throw new Error('process.env.GITHUB_WORKSPACE not set')
-    }
-    await install(downloadPath, installPath)
+    await install(downloadPath)
+    await configure()
     await restore()
     await printConfig()
     await printStats()

@@ -63111,6 +63111,8 @@ __nccwpck_require__.d(__webpack_exports__, {
   "default": () => (/* binding */ src_save)
 });
 
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(5622);
 // EXTERNAL MODULE: ./node_modules/@actions/artifact/lib/artifact-client.js
 var artifact_client = __nccwpck_require__(2605);
 // EXTERNAL MODULE: ./node_modules/@actions/cache/lib/cache.js
@@ -63133,6 +63135,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
+
 function printConfig() {
     return __awaiter(this, void 0, void 0, function* () {
         yield exec.exec('buildcache', ['-c']);
@@ -63151,7 +63154,7 @@ function zeroStats() {
 function getEnvVar(key, defaultValue, quiet = false) {
     var _a;
     if (!quiet) {
-        core.debug(`buildcache: getEnvVar value of ${key}? '${process.env[key]}'`);
+        lib_core.debug(`buildcache: getEnvVar value of ${key}? '${process.env[key]}'`);
     }
     return (_a = process.env[key]) !== null && _a !== void 0 ? _a : defaultValue;
 }
@@ -63163,6 +63166,19 @@ function getAccessToken() {
         throw new Error('GITHUB_TOKEN environment variable or access_token action parameter must be provided');
     }
     return githubToken;
+}
+function getInstallDir() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let installDir = lib_core.getInput('install_dir');
+        if (!installDir || installDir === '') {
+            installDir = getEnvVar('GITHUB_WORKSPACE', '');
+        }
+        if (!installDir || installDir === '') {
+            throw new Error('install_dir not specified or empty');
+        }
+        yield io.mkdirP(installDir);
+        return installDir;
+    });
 }
 function getCacheKeys() {
     var _a;
@@ -63200,15 +63216,13 @@ var save_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arg
 
 
 
+
 function save() {
     return save_awaiter(this, void 0, void 0, function* () {
         const { unique } = getCacheKeys();
-        const ghWorkSpace = process.env.GITHUB_WORKSPACE;
-        if (!ghWorkSpace) {
-            lib_core.setFailed('process.env.GITHUB_WORKSPACE not set');
-            return;
-        }
-        const paths = [`${ghWorkSpace}/.buildcache`];
+        const installDir = yield getInstallDir();
+        const cacheDir = getEnvVar('BUILDCACHE_DIR', `${installDir}/.buildcache`);
+        const paths = [cacheDir];
         lib_core.info(`buildcache: saving cache with key "${unique}".`);
         try {
             yield cache.saveCache(paths, unique);
@@ -63222,13 +63236,13 @@ function uploadBuildLog() {
     return save_awaiter(this, void 0, void 0, function* () {
         const artifactClient = artifact_client/* create */.U();
         const artifactName = 'buildcache_log';
-        const ghWorkSpace = process.env.GITHUB_WORKSPACE;
-        if (!ghWorkSpace) {
-            lib_core.setFailed('process.env.GITHUB_WORKSPACE not set');
-            return;
-        }
-        const files = [`${ghWorkSpace}/.buildcache/buildcache.log`];
-        const rootDirectory = `${ghWorkSpace}/.buildcache/`;
+        const installDir = yield getInstallDir();
+        const cacheDir = getEnvVar('BUILDCACHE_DIR', external_path_.join(installDir, '.buildcache'));
+        const logFile = getEnvVar('BUILDCACHE_LOG_FILE', external_path_.join(cacheDir, 'buildcache.log'));
+        const files = [logFile];
+        // FIXME this won't strip the leading directories off custom log file locations correctly!
+        // It still has the built in assumption that the log file is located inside the cache directory
+        const rootDirectory = cacheDir;
         const options = {
             continueOnError: false
         };
@@ -63243,7 +63257,7 @@ function uploadBuildLog() {
             }
         }
         try {
-            yield io.rmRF('./.buildcache/buildcache.log');
+            yield io.rmRF(logFile);
         }
         catch (e) {
             lib_core.warning(`buildcache: unable to delete buildcache.log ${e}`);

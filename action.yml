@@ -12,6 +12,10 @@ inputs:
     required: false
     description: 'Your GitHub Access Token to fetch buildcache latest build, defaults to: {{ github.token }}'
     default: '${{ github.token }}'
+  install_dir:
+    required: false
+    description: 'Where to install buildcache, GITHUB_WORKSPACE by default. Will be exported on PATH'
+    default: $GITHUB_WORKSPACE
   upload_buildcache_log:
     required: false
     default: false
