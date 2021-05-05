@@ -122,6 +122,7 @@ async function restore(): Promise<void> {
   }
   const paths = [`${ghWorkSpace}/.buildcache`]
 
+  // withInput restores immutable cache from previous runs, unique creates fresh upload post-run
   const { withInput, unique } = getCacheKeys()
   const restoreKeys = [withInput]
 

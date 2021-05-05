@@ -27,6 +27,10 @@ export function getCacheKeys(): {
     withInput = `${base}-${inputKey}`
   }
 
+  // Key generation is important. Always specify a unique primary key to github because caches are immutable.
+  // A unique primary key means a new cache with updated contents will be saved for future runs.
+  // But specifying a good base restore key means a previous cache will be restored as fallback
+  // https://github.com/actions/cache/issues/342#issuecomment-673371329
   const unique = `${withInput}-${new Date().toISOString()}`
 
   return {
