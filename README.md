@@ -9,15 +9,15 @@ Use this GitHub Action to accelerate compilation in your GitHub workflows using 
 ```yaml
 - name: buildcache
 - uses: mikehardy/buildcache-action@v1
-    with:
-      cache_key: ${{ matrix.os }} # optional! maybe you want separate buildcache for separate workflows?
-      upload_buildcache_log: 'false' # optional! defaults to off. Use the uploaded artifact for troubleshooting
-      zero_buildcache_stats: 'true' #optional! default true for per-run stats. Disable for stats across runs
+   with:
+     cache_key: ${{ matrix.os }} # optional! maybe you want separate buildcache for separate workflows?
+     upload_buildcache_log: 'false' # optional! defaults to off. Use the uploaded artifact for troubleshooting
+     zero_buildcache_stats: 'true' #optional! default true for per-run stats. Disable for stats across runs
 ```
 
 2. Use the `clang` and `clang++` from `$PATH` now, not fully-specified paths. This is portable as a _normal_ Xcode installation will place `clang` and `clang++` wrappers in `/usr/bin` so the same command will work for normal compilation or in CI.
 
-You may specify the compiler like this for Xcode builds: `xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace demo/ios/demo.xcworkspace -scheme demo -configuration Debug -sdk iphonesimulator -derivedDataPath demo/ios/build -UseModernBuildSystem=YES`
+You may specify the compiler like this for Xcode builds: `xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace demo/ios/demo.xcworkspace -scheme demo -configuration Debug -sdk iphonesimulator -derivedDataPath demo/ios/build -UseModernBuildSystem=YES`. Here is [an example of a project integrating it](https://github.com/cuvent/react-native-vision-camera/pull/131/files), if you would like to see something concrete.
 
 You might also alter your project settings to use the non-qualified compiler names by default with a `Podfile` section like so:
 
@@ -39,8 +39,9 @@ iOS compile performance improvements of approximately 40-50% may be expected whe
 
 - macos-latest hosted runner, warm cache, react-native-firebase app with all modules: 5min 52s (vs 10min)
 - macos-latest hosted runner, warm cache, react-native 0.64 demo app without Flipper: 2min 55s (vs 5min 20s)
+- macos-latest hosted runner, warm cache, react-native-vision-camera: [7min 13s (vs 13min 13s)](https://github.com/cuvent/react-native-vision-camera/pull/131#issuecomment-832687144)
 
-The _first_ build / "cold" cache case will be slower by around 15%, since buildcache does work to determine if it can used the cached object or not. On the cache miss case it then delegates to the compiler and stores the object for the next run.
+The _first_ build - the "cold" cache case - will be slower by around 15%, since buildcache does work to determine if it can used the cached object or not. On the cache miss case it then delegates to the compiler and stores the object for the next run.
 
 ## Approach
 
