@@ -63514,15 +63514,17 @@ function zeroStats() {
         yield exec.exec('buildcache', ['-z']);
     });
 }
-function getEnvVar(key, defaultValue) {
+function getEnvVar(key, defaultValue, quiet = false) {
     var _a;
-    core.debug(`buildcache: getEnvVar value of ${key}? '${process.env[key]}'`);
+    if (!quiet) {
+        core.debug(`buildcache: getEnvVar value of ${key}? '${process.env[key]}'`);
+    }
     return (_a = process.env[key]) !== null && _a !== void 0 ? _a : defaultValue;
 }
 // returns the current access token or fails if undefined
 function getAccessToken() {
     // Attempt to take GITHUB_TOKEN from env first, otherwise take action.yaml key
-    const githubToken = getEnvVar('GITHUB_TOKEN', core.getInput('access_token'));
+    const githubToken = getEnvVar('GITHUB_TOKEN', core.getInput('access_token'), true);
     if (!githubToken || githubToken === '') {
         throw new Error('GITHUB_TOKEN environment variable or access_token action parameter must be provided');
     }

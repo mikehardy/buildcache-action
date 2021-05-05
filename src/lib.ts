@@ -13,15 +13,25 @@ export async function zeroStats(): Promise<void> {
   await exec.exec('buildcache', ['-z'])
 }
 
-export function getEnvVar(key: string, defaultValue: string): string {
-  core.debug(`buildcache: getEnvVar value of ${key}? '${process.env[key]}'`)
+export function getEnvVar(
+  key: string,
+  defaultValue: string,
+  quiet = false
+): string {
+  if (!quiet) {
+    core.debug(`buildcache: getEnvVar value of ${key}? '${process.env[key]}'`)
+  }
   return process.env[key] ?? defaultValue
 }
 
 // returns the current access token or fails if undefined
 export function getAccessToken(): string {
   // Attempt to take GITHUB_TOKEN from env first, otherwise take action.yaml key
-  const githubToken = getEnvVar('GITHUB_TOKEN', core.getInput('access_token'))
+  const githubToken = getEnvVar(
+    'GITHUB_TOKEN',
+    core.getInput('access_token'),
+    true
+  )
   if (!githubToken || githubToken === '') {
     throw new Error(
       'GITHUB_TOKEN environment variable or access_token action parameter must be provided'
