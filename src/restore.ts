@@ -157,19 +157,3 @@ async function run(): Promise<void> {
 run()
 
 export default run
-
-// - uses: actions/cache@v2
-//   path: ~/.buildcache
-//   key: ${{ runner.os }}-v1
-//   pwd
-//   cd $HOME
-//   ls -la
-//   ln -s $HOME/buildcache/bin/buildcache $HOME/buildcache/bin/clang
-//   ln -s $HOME/buildcache/bin/buildcache $HOME/buildcache/bin/clang++
-//   echo "BUILDCACHE_MAX_CACHE_SIZE=525288000" >> $GITHUB_ENV
-//   echo "BUILDCACHE_DEBUG=2" >> $GITHUB_ENV
-//   echo "BUILDCACHE_LOG_FILE=$HOME/buildcache.log" >> $GITHUB_ENV
-//   echo $HOME/buildcache/bin >> $GITHUB_PATH
-//   $HOME/buildcache/bin/buildcache -c
-//   $HOME/buildcache/bin/buildcache -s
-//   which clang
