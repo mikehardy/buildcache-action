@@ -63150,7 +63150,7 @@ function zeroStats() {
 }
 function getCacheKeys() {
     var _a;
-    const base = 'buildcache-';
+    const base = 'buildcache';
     // TODO - remove `key` here and from action.yaml in v2, deprecated as of v1.1.1
     const inputKey = (_a = core.getInput('cache_key')) !== null && _a !== void 0 ? _a : core.getInput('key');
     let withInput = base;

@@ -18,7 +18,7 @@ export function getCacheKeys(): {
   withInput: string
   unique: string
 } {
-  const base = 'buildcache-'
+  const base = 'buildcache'
 
   // TODO - remove `key` here and from action.yaml in v2, deprecated as of v1.1.1
   const inputKey = core.getInput('cache_key') ?? core.getInput('key')
