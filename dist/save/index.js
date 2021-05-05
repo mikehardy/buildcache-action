@@ -63189,12 +63189,12 @@ function save() {
             return;
         }
         const paths = [`${ghWorkSpace}/.buildcache`];
-        core.info(`Save cache using key "${unique}".`);
+        core.info(`buildcache: saving cache with key "${unique}".`);
         try {
             yield cache.saveCache(paths, unique);
         }
         catch (e) {
-            core.warning(`caching not working: ${e}`);
+            core.warning(`buildcache: caching not working: ${e}`);
         }
     });
 }
@@ -63216,17 +63216,17 @@ function uploadBuildLog() {
         if (uploadFlag && uploadFlag === 'true') {
             try {
                 const uploadResponse = yield artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-                core.info(`Uploaded buildcache.log file, upload size ${uploadResponse.size}`);
+                core.info(`buildcache uploaded buildcache.log file (consumed ${uploadResponse.size} of artifact storage)`);
             }
             catch (e) {
-                core.warning(`Unable to upload buildlog: ${e}`);
+                core.warning(`buildcache: unable to upload buildlog: ${e}`);
             }
         }
         try {
             yield io.rmRF('./.buildcache/buildcache.log');
         }
         catch (e) {
-            core.warning(`Unable to delete buildcache.log ${e}`);
+            core.warning(`buildcache: unable to delete buildcache.log ${e}`);
         }
     });
 }

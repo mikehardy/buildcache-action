@@ -63564,7 +63564,7 @@ function downloadLatest() {
             default:
                 filename = 'buildcache-macos.zip';
         }
-        core.info(`release filename based on runner os is ${filename}`);
+        core.info(`buildcache: release file based on runner os is ${filename}`);
         // Grab the releases page for the for the buildcache project
         try {
             let githubToken = core.getInput('access_token');
@@ -63587,9 +63587,9 @@ function downloadLatest() {
                 core.setFailed('Unable to determine release URL for buildcache');
                 return;
             }
-            core.info(`we have a download url? ${buildCacheReleaseUrl}`);
+            core.info(`buildcache: installing from ${buildCacheReleaseUrl}`);
             const buildcacheReleasePath = yield tool_cache.downloadTool(buildCacheReleaseUrl);
-            core.info(`we have a tool download path of ${buildcacheReleasePath}`);
+            core.info(`buildcache: download path ${buildcacheReleasePath}`);
             const ghWorkSpace = process.env.GITHUB_WORKSPACE;
             if (!ghWorkSpace) {
                 core.setFailed('process.env.GITHUB_WORKSPACE not set');
@@ -63607,7 +63607,7 @@ function downloadLatest() {
                     buildcacheFolder = yield tool_cache.extractZip(buildcacheReleasePath, ghWorkSpace);
                     break;
             }
-            core.info(`we have a folder of ${buildcacheFolder}`);
+            core.info(`buildcache: unpacked folder ${buildcacheFolder}`);
             const buildcacheBinFolder = external_path_.join(buildcacheFolder, 'buildcache', 'bin');
             const buildcacheBinPath = external_path_.join(buildcacheBinFolder, 'buildcache');
             // windows has different filename and cannot do symbolic links
@@ -63648,14 +63648,14 @@ function restore() {
         try {
             const restoredWith = yield cache.restoreCache(paths, unique, restoreKeys);
             if (restoredWith) {
-                core.info(`Restored from cache key "${restoredWith}".`);
+                core.info(`buildcache: restored from cache key "${restoredWith}".`);
             }
             else {
-                core.info('No cache found.');
+                core.info(`buildcache: no cache for key ${unique} or ${withInput} - cold cache or invalid key`);
             }
         }
         catch (e) {
-            core.warning(`caching not working: ${e}`);
+            core.warning(`buildcache: caching not working: ${e}`);
         }
     });
 }
@@ -63667,7 +63667,7 @@ function run() {
         yield printStats();
         const zeroStatsFlag = core.getInput('zero_buildcache_stats');
         if (zeroStatsFlag && zeroStatsFlag === 'true') {
-            core.info('Zeroing stats - statistics after workflow are for this run only.');
+            core.info('buildcache: zeroing stats - statistics after workflow are for this run only.');
         }
     });
 }

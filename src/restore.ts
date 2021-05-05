@@ -24,7 +24,7 @@ export async function downloadLatest(): Promise<void> {
       filename = 'buildcache-macos.zip'
   }
 
-  core.info(`release filename based on runner os is ${filename}`)
+  core.info(`buildcache: release file based on runner os is ${filename}`)
 
   // Grab the releases page for the for the buildcache project
   try {
@@ -53,11 +53,11 @@ export async function downloadLatest(): Promise<void> {
       core.setFailed('Unable to determine release URL for buildcache')
       return
     }
-    core.info(`we have a download url? ${buildCacheReleaseUrl}`)
+    core.info(`buildcache: installing from ${buildCacheReleaseUrl}`)
     const buildcacheReleasePath = await toolcache.downloadTool(
       buildCacheReleaseUrl
     )
-    core.info(`we have a tool download path of ${buildcacheReleasePath}`)
+    core.info(`buildcache: download path ${buildcacheReleasePath}`)
     const ghWorkSpace = process.env.GITHUB_WORKSPACE
     if (!ghWorkSpace) {
       core.setFailed('process.env.GITHUB_WORKSPACE not set')
@@ -82,7 +82,7 @@ export async function downloadLatest(): Promise<void> {
         )
         break
     }
-    core.info(`we have a folder of ${buildcacheFolder}`)
+    core.info(`buildcache: unpacked folder ${buildcacheFolder}`)
 
     const buildcacheBinFolder = path.join(buildcacheFolder, 'buildcache', 'bin')
     const buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcache')
@@ -128,12 +128,14 @@ async function restore(): Promise<void> {
   try {
     const restoredWith = await cache.restoreCache(paths, unique, restoreKeys)
     if (restoredWith) {
-      core.info(`Restored from cache key "${restoredWith}".`)
+      core.info(`buildcache: restored from cache key "${restoredWith}".`)
     } else {
-      core.info('No cache found.')
+      core.info(
+        `buildcache: no cache for key ${unique} or ${withInput} - cold cache or invalid key`
+      )
     }
   } catch (e) {
-    core.warning(`caching not working: ${e}`)
+    core.warning(`buildcache: caching not working: ${e}`)
   }
 }
 
@@ -145,7 +147,7 @@ async function run(): Promise<void> {
   const zeroStatsFlag = core.getInput('zero_buildcache_stats')
   if (zeroStatsFlag && zeroStatsFlag === 'true') {
     core.info(
-      'Zeroing stats - statistics after workflow are for this run only.'
+      'buildcache: zeroing stats - statistics after workflow are for this run only.'
     )
   }
 }

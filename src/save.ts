@@ -15,11 +15,11 @@ async function save(): Promise<void> {
   }
   const paths = [`${ghWorkSpace}/.buildcache`]
 
-  core.info(`Save cache using key "${unique}".`)
+  core.info(`buildcache: saving cache with key "${unique}".`)
   try {
     await cache.saveCache(paths, unique)
   } catch (e) {
-    core.warning(`caching not working: ${e}`)
+    core.warning(`buildcache: caching not working: ${e}`)
   }
 }
 
@@ -49,16 +49,16 @@ async function uploadBuildLog(): Promise<void> {
         options
       )
       core.info(
-        `Uploaded buildcache.log file, upload size ${uploadResponse.size}`
+        `buildcache uploaded buildcache.log file (consumed ${uploadResponse.size} of artifact storage)`
       )
     } catch (e) {
-      core.warning(`Unable to upload buildlog: ${e}`)
+      core.warning(`buildcache: unable to upload buildlog: ${e}`)
     }
   }
   try {
     await io.rmRF('./.buildcache/buildcache.log')
   } catch (e) {
-    core.warning(`Unable to delete buildcache.log ${e}`)
+    core.warning(`buildcache: unable to delete buildcache.log ${e}`)
   }
 }
 
