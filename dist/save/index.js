@@ -63157,6 +63157,10 @@ function getCacheKeys() {
     if (inputKey) {
         withInput = `${base}-${inputKey}`;
     }
+    // Key generation is important. Always specify a unique primary key to github because caches are immutable.
+    // A unique primary key means a new cache with updated contents will be saved for future runs.
+    // But specifying a good base restore key means a previous cache will be restored as fallback
+    // https://github.com/actions/cache/issues/342#issuecomment-673371329
     const unique = `${withInput}-${new Date().toISOString()}`;
     return {
         base,
@@ -63216,7 +63220,7 @@ function uploadBuildLog() {
         if (uploadFlag && uploadFlag === 'true') {
             try {
                 const uploadResponse = yield artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-                core.info(`buildcache uploaded buildcache.log file (consumed ${uploadResponse.size} of artifact storage)`);
+                core.info(`buildcache: uploaded buildcache.log file (consumed ${uploadResponse.size} of artifact storage)`);
             }
             catch (e) {
                 core.warning(`buildcache: unable to upload buildlog: ${e}`);

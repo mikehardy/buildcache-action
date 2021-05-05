@@ -63479,7 +63479,7 @@ var cache = __nccwpck_require__(7799);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(2186);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
-var lib_exec = __nccwpck_require__(1514);
+var exec = __nccwpck_require__(1514);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(5438);
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
@@ -63500,12 +63500,12 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function printConfig() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield lib_exec.exec('buildcache', ['-c']);
+        yield exec.exec('buildcache', ['-c']);
     });
 }
 function printStats() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield lib_exec.exec('buildcache', ['-s']);
+        yield exec.exec('buildcache', ['-s']);
     });
 }
 function zeroStats() {
@@ -63522,6 +63522,10 @@ function getCacheKeys() {
     if (inputKey) {
         withInput = `${base}-${inputKey}`;
     }
+    // Key generation is important. Always specify a unique primary key to github because caches are immutable.
+    // A unique primary key means a new cache with updated contents will be saved for future runs.
+    // But specifying a good base restore key means a previous cache will be restored as fallback
+    // https://github.com/actions/cache/issues/342#issuecomment-673371329
     const unique = `${withInput}-${new Date().toISOString()}`;
     return {
         base,
@@ -63612,12 +63616,12 @@ function downloadLatest() {
             const buildcacheBinPath = external_path_.join(buildcacheBinFolder, 'buildcache');
             // windows has different filename and cannot do symbolic links
             if (os !== 'win32') {
-                yield lib_exec.exec('ln', [
+                yield exec.exec('ln', [
                     '-s',
                     buildcacheBinPath,
                     external_path_.join(buildcacheBinFolder, 'clang')
                 ]);
-                yield lib_exec.exec('ln', [
+                yield exec.exec('ln', [
                     '-s',
                     buildcacheBinPath,
                     external_path_.join(buildcacheBinFolder, 'clang++')
@@ -63643,6 +63647,7 @@ function restore() {
             return;
         }
         const paths = [`${ghWorkSpace}/.buildcache`];
+        // withInput restores immutable cache from previous runs, unique creates fresh upload post-run
         const { withInput, unique } = getCacheKeys();
         const restoreKeys = [withInput];
         try {
@@ -63667,7 +63672,8 @@ function run() {
         yield printStats();
         const zeroStatsFlag = core.getInput('zero_buildcache_stats');
         if (zeroStatsFlag && zeroStatsFlag === 'true') {
-            core.info('buildcache: zeroing stats - statistics after workflow are for this run only.');
+            core.info('buildcache: zeroing stats - stats display in cleanup task will be for this run only.');
+            yield zeroStats();
         }
     });
 }
