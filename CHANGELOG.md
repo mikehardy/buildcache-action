@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.2.1
+
+- docs: a lot of work on documentation so the project is easy to understand and integrate
+
 ## 1.2.0
 
 - feat: allow complete config control via environment variables defined/used by buildcache
