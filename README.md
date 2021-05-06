@@ -1,6 +1,8 @@
 # Accelerate builds using buildcache
 
-Use this GitHub Action to accelerate compilation in your GitHub workflows using [buildcache](https://github.com/mbitsnbites/buildcache). Xcode projects should see 40-50% improvement
+Use this GitHub Action to accelerate compilation in your GitHub workflows using [buildcache](https://github.com/mbitsnbites/buildcache)
+
+![Compilation Improvement Example](./docs/Buildcache_Example_Improvement.png)
 
 ## Usage
 
