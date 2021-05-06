@@ -6,55 +6,67 @@ Use this GitHub Action to accelerate compilation in your GitHub workflows using 
 
 1. Workflow integration
 1. Build integration
-1. There is no step 3
+1. ??
+1. Profit
 
 ### Workflow Integration
 
 #### Default Style
 
-The defaults should fit most projects well.
+The defaults fit most projects well.
+
 The defaults definitely fit react-native projects well.
 
 ```yaml
-- name: buildcache
-- uses: mikehardy/buildcache-action@v1
+jobs:
+  ios:
+  runs-on: macos-latest # also runs on ubuntu and windows
+  steps:
+    - uses: mikehardy/buildcache-action@v1
 ```
 
 - 500MB cache, cache is in `$GITHUB_WORKSPACE`, just needs build integration and you're set!
 
 #### Customize if you need to
 
-The module guesses what would be best but doesn't lock you in.
-Every single buildcache option is available to override via environment variables
-Every single "decision" the module makes is configurable.
+All [buildcache options](https://github.com/mbitsnbites/buildcache/blob/master/doc/configuration.md) are available to override via environment variables set in the workflow env area
+
+A few options are used internally by this action, but if you override them this action will respect the override you have set.
 
 ```yaml
-- name: buildcache
-- uses: mikehardy/buildcache-action@v1
-   env:
-     BUILDCACHE_DIR: ../.buildcache # optional! Put the cache somewhere else
-     BUILDCACHE_DEBUG: 2 # optional! If you need more logging?
-     BUILDCACHE_MAX_CACHE_SIZE: 1000000000 # optional! Need a bigger cache?
-     BUILDCACHE_LOG_FILE: ../buildcache.log # optional! Log where you like
-   with:
-     cache_key: ${{ matrix.os }} # optional! separate caches maybe?
-     upload_buildcache_log: 'true' # optional! 100% cache misses? Find out why
-     zero_buildcache_stats: 'false' # optional! lifetime vs per-run stats?
+jobs:
+  ios:
+    env: # overrides: https://github.com/mbitsnbites/buildcache/blob/master/doc/configuration.md
+      BUILDCACHE_DIR: ../.buildcache # optional: Put the cache somewhere else
+      BUILDCACHE_DEBUG: 2 # optional: If you need more logging?
+      BUILDCACHE_MAX_CACHE_SIZE: 1000000000 # optional: Need a bigger cache?
+      BUILDCACHE_LOG_FILE: ../buildcache.log # optional: Log where you like
+  runs-on: macos-latest
+  steps:
+    - uses: mikehardy/buildcache-action@v1
+      with:
+        cache_key: ${{ matrix.os }} # optional: separate caches maybe?
+        upload_buildcache_log: 'true' # optional: 100% cache misses? Find out why
+        zero_buildcache_stats: 'false' # optional: lifetime vs per-run stats?
 ```
 
 ### Build Integration
 
-buildcache is available now but is unused until you call `clang` and`clang++` wrapped by buildcache.
+buildcache is available now, but is unused until you call `clang` and`clang++` wrapped by buildcache.
 
-A normal Xcode installation puts `clang` and `clang++` on your `PATH`, and this action puts buildcache wrappers for it in your `PATH` first, before the normal Xcode ones.
+Xcode puts `clang` and `clang++` on your `PATH` (in `/usr/bin`), and this action puts buildcache wrappers for it in your `PATH` first, before the normal Xcode ones.
 
-This is the key to an easy build integration - you may rely on calling `clang` and `clang++` from `$PATH` at all times, instead of via fully-specified paths. In environments where buildcache is availble, it will work. In environments that do not have buildcache, *it will still work*
+This `PATH` manipulation is the key to an easy build integration.
+
+You may rely on calling `clang` and `clang++` from `PATH` at all times, instead of via fully-specified paths. In environments where buildcache is availble, it will work. In environments that do not have buildcache, _it will still work_
 
 #### Minimal change: override compiler on command line
 
-If you don't want to rely on `PATH` everywhere and just want to isolate the change to the Github Actions CI environment, run you Xcode build using specific overrides.
+If you want to isolate the integration to the Github Actions CI environment, run your Xcode build using specific overrides.
 
-You may specify the compiler like this for Xcode builds: `xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++  <all other parameters>`
+```sh
+xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ <all other parameters>`
+```
 
 Here is [a real example of a project integrating it](https://github.com/cuvent/react-native-vision-camera/pull/131/files) this way
 
@@ -62,7 +74,9 @@ Here is [a real example of a project integrating it](https://github.com/cuvent/r
 
 After seeing the acceleration, you may want to use buildcache locally as well (I do!)
 
-You can change your Xcode project definition to do this via a `Podfile` hook. This is backwards-compatible - it should still work on machines that do not have buildcache installed, but it is more intrusive because it changes your Xcode project file.
+This is possible if you change your project definition to override the compiler to use the value from `PATH` all the time. This should be backwards-compatible - it should still work on machines that do not have buildcache installed, but it is more intrusive because it changes your Xcode project file.
+
+You can may do this via a `Podfile` hook like this:
 
 ```ruby
     installer.pods_project.targets.each do |target|
@@ -75,6 +89,20 @@ You can change your Xcode project definition to do this via a `Podfile` hook. Th
     end
 
 ```
+
+## Verification
+
+How do you know it is working?
+
+The overall buid time should make it obvious, but the real test is your cache hit/miss rate.
+
+To verify things are working using the default configuration, look at the output of the workflow run, expand the "Post buildcache" step and check the statistics printed out. If you you "Re-run jobs" using the GitHub Actions web interface to re-run a job a second time, you _should_ see 100% hit rate, on quite a few objects.
+
+The output of this repositories [react-native compile test action](https://github.com/mikehardy/buildcache-action/actions/workflows/react-native-build-test.yml) are a good example.
+
+If you need more information, the default `BUILDCACHE_DEBUG` level of `2` is likely enough, you just need to add the `upload_buildcache_log` flag to your workflow integration and set it to `true`, then you may examine the actual output of buildcache as it worked, using the logfile attached as an artifact to the workflow run. If that still is not enough you may need a debug level of `3`.
+
+In practice, that is all I have needed to do to be certain the integration was successful in other projects.
 
 ## Benchmarks - 40-50% improvement
 
