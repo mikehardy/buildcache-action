@@ -5,7 +5,7 @@ updates:
     # Look for `package.json` and `lock` files in the `root` directory
     directory: '/'
     allow:
-      dependency-type: 'production'
+      - dependency-type: 'production'
     # Check the npm registry for updates every day (weekdays)
     schedule:
       interval: 'daily'
