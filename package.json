@@ -17,7 +17,7 @@
     "package": "yarn package-restore && yarn package-save",
     "test": "jest",
     "test-watch": "jest --watch",
-    "all": "yarn build && yarn format && yarn lint && yarn package && yarn test",
+    "all": "yarn build && yarn format-check && yarn lint && yarn package && yarn test",
     "shipit": "np"
   },
   "repository": {
