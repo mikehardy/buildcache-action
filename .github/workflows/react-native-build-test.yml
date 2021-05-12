@@ -51,7 +51,7 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v2.1.5
         name: Yarn Cache
         id: yarn-cache
         with:
@@ -67,7 +67,7 @@ jobs:
           max_attempts: 3
           command: npx react-native init --skip-install demo
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v2.1.5
         name: Cache Pods
         id: pods-cache
         with:
