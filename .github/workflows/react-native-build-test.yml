@@ -40,7 +40,7 @@ jobs:
           xcode-version: latest-stable
 
       - name: Update Ruby build tools
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v2.4.0
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -60,7 +60,7 @@ jobs:
           restore-keys: ${{ runner.os }}-yarn
 
       - name: Create React Native Demo
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v2.4.0
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -76,7 +76,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pods
 
       - name: Install Demo dependencies
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v2.4.0
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -84,7 +84,7 @@ jobs:
           command: pushd demo && yarn
 
       - name: Disable Flipper / Install Pods
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v2.4.0
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
