@@ -35,7 +35,7 @@ export async function downloadLatest(accessToken: string): Promise<string> {
   // Grab the releases page for the for the buildcache project
   const octokit = github.getOctokit(accessToken)
 
-  const releaseInfo = await octokit.repos.getLatestRelease({
+  const releaseInfo = await octokit.rest.repos.getLatestRelease({
     owner: 'mbitsnbites',
     repo: 'buildcache'
   })

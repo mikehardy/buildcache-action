@@ -3865,6 +3865,7 @@ class Context {
      * Hydrate the context from the environment
      */
     constructor() {
+        var _a, _b, _c;
         this.payload = {};
         if (process.env.GITHUB_EVENT_PATH) {
             if (fs_1.existsSync(process.env.GITHUB_EVENT_PATH)) {
@@ -3884,6 +3885,9 @@ class Context {
         this.job = process.env.GITHUB_JOB;
         this.runNumber = parseInt(process.env.GITHUB_RUN_NUMBER, 10);
         this.runId = parseInt(process.env.GITHUB_RUN_ID, 10);
+        this.apiUrl = (_a = process.env.GITHUB_API_URL) !== null && _a !== void 0 ? _a : `https://api.github.com`;
+        this.serverUrl = (_b = process.env.GITHUB_SERVER_URL) !== null && _b !== void 0 ? _b : `https://github.com`;
+        this.graphqlUrl = (_c = process.env.GITHUB_GRAPHQL_URL) !== null && _c !== void 0 ? _c : `https://api.github.com/graphql`;
     }
     get issue() {
         const payload = this.payload;
@@ -3928,7 +3932,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -3971,7 +3975,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -4021,7 +4025,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -48073,6 +48077,7 @@ const Endpoints = {
     getLatestRelease: ["GET /repos/{owner}/{repo}/releases/latest"],
     getPages: ["GET /repos/{owner}/{repo}/pages"],
     getPagesBuild: ["GET /repos/{owner}/{repo}/pages/builds/{build_id}"],
+    getPagesHealthCheck: ["GET /repos/{owner}/{repo}/pages/health"],
     getParticipationStats: ["GET /repos/{owner}/{repo}/stats/participation"],
     getPullRequestReviewProtection: ["GET /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews"],
     getPunchCardStats: ["GET /repos/{owner}/{repo}/stats/punch_card"],
@@ -48281,7 +48286,7 @@ const Endpoints = {
   }
 };
 
-const VERSION = "4.15.1";
+const VERSION = "5.1.1";
 
 function endpointsToMethods(octokit, endpointsMap) {
   const newMethods = {};
@@ -48366,12 +48371,20 @@ function decorate(octokit, scope, methodName, defaults, decorations) {
 
 function restEndpointMethods(octokit) {
   const api = endpointsToMethods(octokit, Endpoints);
+  return {
+    rest: api
+  };
+}
+restEndpointMethods.VERSION = VERSION;
+function legacyRestEndpointMethods(octokit) {
+  const api = endpointsToMethods(octokit, Endpoints);
   return _objectSpread2(_objectSpread2({}, api), {}, {
     rest: api
   });
 }
-restEndpointMethods.VERSION = VERSION;
+legacyRestEndpointMethods.VERSION = VERSION;
 
+exports.legacyRestEndpointMethods = legacyRestEndpointMethods;
 exports.restEndpointMethods = restEndpointMethods;
 //# sourceMappingURL=index.js.map
 
@@ -63601,7 +63614,7 @@ function downloadLatest(accessToken) {
         core.info(`buildcache: release file based on runner os is ${filename}`);
         // Grab the releases page for the for the buildcache project
         const octokit = github.getOctokit(accessToken);
-        const releaseInfo = yield octokit.repos.getLatestRelease({
+        const releaseInfo = yield octokit.rest.repos.getLatestRelease({
             owner: 'mbitsnbites',
             repo: 'buildcache'
         });
