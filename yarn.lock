@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@actions/artifact@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@actions/artifact/-/artifact-0.5.1.tgz#1eeea3236fd89e3f39f5a491649cb293c3872340"
-  integrity sha512-wKXEa4fhvgsw3kPu74F3J6eAi92rqv7BvpjEAmiqmDFeuDj6cyqWDWXx6axWfiBmmln1/LVf1DLWikbciKkoVQ==
+"@actions/artifact@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@actions/artifact/-/artifact-0.5.2.tgz#e57ef7fe688211262c88fb4d63dfe0fbdc97bf88"
+  integrity sha512-q/r8WSqyxBJ0ffLCRrtjCBTGnAYqP+ID4yG7f7YSlhrQ4thNg/d+Tq9f1YkLPKX46ZR97OWtGDY+oU/nxcqvLw==
   dependencies:
     "@actions/core" "^1.2.6"
     "@actions/http-client" "^1.0.11"
