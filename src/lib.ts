@@ -2,16 +2,22 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as io from '@actions/io'
 
+async function execBuildCacheWithoutImpersonation(arg: string): Promise<void> {
+  const env = { ...process.env } as exec.ExecOptions['env']
+  delete env?.BUILDCACHE_IMPERSONATE
+  await exec.exec('buildcache', [arg], { env })
+}
+
 export async function printConfig(): Promise<void> {
-  await exec.exec('buildcache', ['-c'])
+  await execBuildCacheWithoutImpersonation('-c')
 }
 
 export async function printStats(): Promise<void> {
-  await exec.exec('buildcache', ['-s'])
+  await execBuildCacheWithoutImpersonation('-s')
 }
 
 export async function zeroStats(): Promise<void> {
-  await exec.exec('buildcache', ['-z'])
+  await execBuildCacheWithoutImpersonation('-z')
 }
 
 export function getEnvVar(
