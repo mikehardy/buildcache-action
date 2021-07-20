@@ -10,7 +10,10 @@ async function save(): Promise<void> {
   const { unique } = getCacheKeys()
 
   const installDir = await getInstallDir()
-  const cacheDir = getEnvVar('BUILDCACHE_DIR', `${installDir}/.buildcache`)
+  const cacheDir = getEnvVar(
+    'BUILDCACHE_DIR',
+    path.join(installDir, '.buildcache')
+  )
   const paths = [cacheDir]
 
   core.info(`buildcache: saving cache with key "${unique}".`)

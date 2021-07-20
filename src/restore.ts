@@ -95,7 +95,7 @@ async function configure(): Promise<void> {
   // Now set up the environment by putting our path in there
   core.exportVariable(
     'BUILDCACHE_DIR',
-    getEnvVar('BUILDCACHE_DIR', `${installDir}/.buildcache`)
+    getEnvVar('BUILDCACHE_DIR', path.join(installDir, '.buildcache'))
   )
   core.exportVariable(
     'BUILDCACHE_MAX_CACHE_SIZE',
@@ -104,7 +104,10 @@ async function configure(): Promise<void> {
   core.exportVariable('BUILDCACHE_DEBUG', getEnvVar('BUILDCACHE_DEBUG', '2'))
   core.exportVariable(
     'BUILDCACHE_LOG_FILE',
-    getEnvVar('BUILDCACHE_LOG_FILE', `${installDir}/.buildcache/buildcache.log`)
+    getEnvVar(
+      'BUILDCACHE_LOG_FILE',
+      path.join(installDir, '.buildcache', 'buildcache.log')
+    )
   )
 }
 
