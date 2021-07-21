@@ -93,10 +93,11 @@ async function configure(): Promise<void> {
   const installDir = await getInstallDir()
 
   // Now set up the environment by putting our path in there
-  core.exportVariable(
+  const cacheDir = getEnvVar(
     'BUILDCACHE_DIR',
-    getEnvVar('BUILDCACHE_DIR', path.join(installDir, '.buildcache'))
+    path.join(installDir, '.buildcache')
   )
+  core.exportVariable('BUILDCACHE_DIR', cacheDir)
   core.exportVariable(
     'BUILDCACHE_MAX_CACHE_SIZE',
     getEnvVar('BUILDCACHE_MAX_CACHE_SIZE', '500000000')
@@ -106,18 +107,16 @@ async function configure(): Promise<void> {
     'BUILDCACHE_LOG_FILE',
     getEnvVar(
       'BUILDCACHE_LOG_FILE',
-      path.join(installDir, '.buildcache', 'buildcache.log')
+      path.join(cacheDir, '.buildcache', 'buildcache.log')
     )
   )
 }
 
 async function restore(): Promise<void> {
-  const ghWorkSpace = process.env.GITHUB_WORKSPACE
-  if (!ghWorkSpace) {
-    core.setFailed('process.env.GITHUB_WORKSPACE not set')
-    return
-  }
-  const paths = [`${ghWorkSpace}/.buildcache`]
+  const installDir = await getInstallDir()
+  const paths = [
+    getEnvVar('BUILDCACHE_DIR', path.join(installDir, '.buildcache'))
+  ]
 
   // withInput restores immutable cache from previous runs, unique creates fresh upload post-run
   const { withInput, unique } = getCacheKeys()
