@@ -64276,6 +64276,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function execBuildCacheWithoutImpersonation(arg) {
     return __awaiter(this, void 0, void 0, function* () {
         const env = Object.assign({}, process.env);
@@ -64327,6 +64328,11 @@ function getInstallDir() {
         return installDir;
     });
 }
+function getCacheDir() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return external_path_.resolve(yield getInstallDir(), getEnvVar('BUILDCACHE_DIR', '.buildcache'));
+    });
+}
 function getCacheKeys() {
     var _a;
     const base = 'buildcache';
@@ -64367,8 +64373,7 @@ var save_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arg
 function save() {
     return save_awaiter(this, void 0, void 0, function* () {
         const { unique } = getCacheKeys();
-        const installDir = yield getInstallDir();
-        const cacheDir = getEnvVar('BUILDCACHE_DIR', external_path_.join(installDir, '.buildcache'));
+        const cacheDir = yield getCacheDir();
         const paths = [cacheDir];
         lib_core.info(`buildcache: saving cache with key "${unique}".`);
         try {
@@ -64383,9 +64388,8 @@ function uploadBuildLog() {
     return save_awaiter(this, void 0, void 0, function* () {
         const artifactClient = artifact_client/* create */.U();
         const artifactName = 'buildcache_log';
-        const installDir = yield getInstallDir();
-        const cacheDir = getEnvVar('BUILDCACHE_DIR', external_path_.join(installDir, '.buildcache'));
-        const logFile = getEnvVar('BUILDCACHE_LOG_FILE', external_path_.join(cacheDir, 'buildcache.log'));
+        const cacheDir = yield getCacheDir();
+        const logFile = external_path_.resolve(cacheDir, getEnvVar('BUILDCACHE_LOG_FILE', 'buildcache.log'));
         const files = [logFile];
         // FIXME this won't strip the leading directories off custom log file locations correctly!
         // It still has the built in assumption that the log file is located inside the cache directory
