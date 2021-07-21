@@ -8,6 +8,7 @@ import * as toolcache from '@actions/tool-cache'
 
 import {
   getAccessToken,
+  getCacheDir,
   getCacheKeys,
   getEnvVar,
   getInstallDir,
@@ -71,7 +72,11 @@ export async function install(sourcePath: string): Promise<void> {
   }
   core.info(`buildcache: unpacked folder ${buildcacheFolder}`)
 
-  const buildcacheBinFolder = path.join(buildcacheFolder, 'buildcache', 'bin')
+  const buildcacheBinFolder = path.resolve(
+    buildcacheFolder,
+    'buildcache',
+    'bin'
+  )
   const buildcacheBinPath = path.join(buildcacheBinFolder, 'buildcache')
   // windows has different filename and cannot do symbolic links
   if (process.platform !== 'win32') {
@@ -90,13 +95,8 @@ export async function install(sourcePath: string): Promise<void> {
 }
 
 async function configure(): Promise<void> {
-  const installDir = await getInstallDir()
-
-  // Now set up the environment by putting our path in there
-  const cacheDir = getEnvVar(
-    'BUILDCACHE_DIR',
-    path.join(installDir, '.buildcache')
-  )
+  // Set up the environment by putting our path in there
+  const cacheDir = await getCacheDir()
   core.exportVariable('BUILDCACHE_DIR', cacheDir)
   core.exportVariable(
     'BUILDCACHE_MAX_CACHE_SIZE',
@@ -105,18 +105,12 @@ async function configure(): Promise<void> {
   core.exportVariable('BUILDCACHE_DEBUG', getEnvVar('BUILDCACHE_DEBUG', '2'))
   core.exportVariable(
     'BUILDCACHE_LOG_FILE',
-    getEnvVar(
-      'BUILDCACHE_LOG_FILE',
-      path.join(cacheDir, '.buildcache', 'buildcache.log')
-    )
+    path.resolve(cacheDir, getEnvVar('BUILDCACHE_LOG_FILE', 'buildcache.log'))
   )
 }
 
 async function restore(): Promise<void> {
-  const installDir = await getInstallDir()
-  const paths = [
-    getEnvVar('BUILDCACHE_DIR', path.join(installDir, '.buildcache'))
-  ]
+  const paths = [await getCacheDir()]
 
   // withInput restores immutable cache from previous runs, unique creates fresh upload post-run
   const { withInput, unique } = getCacheKeys()

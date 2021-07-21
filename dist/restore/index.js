@@ -63253,6 +63253,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function execBuildCacheWithoutImpersonation(arg) {
     return __awaiter(this, void 0, void 0, function* () {
         const env = Object.assign({}, process.env);
@@ -63302,6 +63303,11 @@ function getInstallDir() {
         }
         yield io.mkdirP(installDir);
         return installDir;
+    });
+}
+function getCacheDir() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return external_path_.resolve(yield getInstallDir(), getEnvVar('BUILDCACHE_DIR', '.buildcache'));
     });
 }
 function getCacheKeys() {
@@ -63392,7 +63398,7 @@ function install(sourcePath) {
                 break;
         }
         core.info(`buildcache: unpacked folder ${buildcacheFolder}`);
-        const buildcacheBinFolder = external_path_.join(buildcacheFolder, 'buildcache', 'bin');
+        const buildcacheBinFolder = external_path_.resolve(buildcacheFolder, 'buildcache', 'bin');
         const buildcacheBinPath = external_path_.join(buildcacheBinFolder, 'buildcache');
         // windows has different filename and cannot do symbolic links
         if (process.platform !== 'win32') {
@@ -63412,21 +63418,17 @@ function install(sourcePath) {
 }
 function configure() {
     return restore_awaiter(this, void 0, void 0, function* () {
-        const installDir = yield getInstallDir();
-        // Now set up the environment by putting our path in there
-        const cacheDir = getEnvVar('BUILDCACHE_DIR', external_path_.join(installDir, '.buildcache'));
+        // Set up the environment by putting our path in there
+        const cacheDir = yield getCacheDir();
         core.exportVariable('BUILDCACHE_DIR', cacheDir);
         core.exportVariable('BUILDCACHE_MAX_CACHE_SIZE', getEnvVar('BUILDCACHE_MAX_CACHE_SIZE', '500000000'));
         core.exportVariable('BUILDCACHE_DEBUG', getEnvVar('BUILDCACHE_DEBUG', '2'));
-        core.exportVariable('BUILDCACHE_LOG_FILE', getEnvVar('BUILDCACHE_LOG_FILE', external_path_.join(cacheDir, '.buildcache', 'buildcache.log')));
+        core.exportVariable('BUILDCACHE_LOG_FILE', external_path_.resolve(cacheDir, getEnvVar('BUILDCACHE_LOG_FILE', 'buildcache.log')));
     });
 }
 function restore() {
     return restore_awaiter(this, void 0, void 0, function* () {
-        const installDir = yield getInstallDir();
-        const paths = [
-            getEnvVar('BUILDCACHE_DIR', external_path_.join(installDir, '.buildcache'))
-        ];
+        const paths = [yield getCacheDir()];
         // withInput restores immutable cache from previous runs, unique creates fresh upload post-run
         const { withInput, unique } = getCacheKeys();
         const restoreKeys = [withInput];

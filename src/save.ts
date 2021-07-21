@@ -4,16 +4,12 @@ import * as artifact from '@actions/artifact'
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
 
-import { getCacheKeys, getEnvVar, getInstallDir, printStats } from './lib'
+import { getCacheDir, getCacheKeys, getEnvVar, printStats } from './lib'
 
 async function save(): Promise<void> {
   const { unique } = getCacheKeys()
 
-  const installDir = await getInstallDir()
-  const cacheDir = getEnvVar(
-    'BUILDCACHE_DIR',
-    path.join(installDir, '.buildcache')
-  )
+  const cacheDir = await getCacheDir()
   const paths = [cacheDir]
 
   core.info(`buildcache: saving cache with key "${unique}".`)
@@ -28,14 +24,10 @@ async function uploadBuildLog(): Promise<void> {
   const artifactClient = artifact.create()
   const artifactName = 'buildcache_log'
 
-  const installDir = await getInstallDir()
-  const cacheDir = getEnvVar(
-    'BUILDCACHE_DIR',
-    path.join(installDir, '.buildcache')
-  )
-  const logFile = getEnvVar(
-    'BUILDCACHE_LOG_FILE',
-    path.join(cacheDir, 'buildcache.log')
+  const cacheDir = await getCacheDir()
+  const logFile = path.resolve(
+    cacheDir,
+    getEnvVar('BUILDCACHE_LOG_FILE', 'buildcache.log')
   )
   const files = [logFile]
   // FIXME this won't strip the leading directories off custom log file locations correctly!

@@ -1,3 +1,4 @@
+import * as path from 'path'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as io from '@actions/io'
@@ -57,6 +58,13 @@ export async function getInstallDir(): Promise<string> {
   }
   await io.mkdirP(installDir)
   return installDir
+}
+
+export async function getCacheDir(): Promise<string> {
+  return path.resolve(
+    await getInstallDir(),
+    getEnvVar('BUILDCACHE_DIR', '.buildcache')
+  )
 }
 
 export function getCacheKeys(): {
