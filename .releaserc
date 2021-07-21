@@ -1,0 +1,17 @@
+{
+  "debug": true,
+  "branches": [
+    {name: "main"}
+  ],
+  "repositoryUrl": "git@github.com:mikehardy/buildcache-action.git",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ]
+  ]
+}

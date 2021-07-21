@@ -19,7 +19,7 @@
     "test": "jest",
     "test-watch": "jest --watch",
     "all": "yarn build && yarn format-check && yarn lint && yarn package && yarn test",
-    "shipit": "np",
+    "shipit": "npx semantic-release",
     "move-v1-tag": "git tag -d v1 && git push origin :refs/tags/v1 && git tag v1 && git push --tags"
   },
   "repository": {
@@ -45,6 +45,7 @@
     "@actions/tool-cache": "^1.7.1"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^5.0.1",
     "@types/jest": "^26.0.15",
     "@types/node": "^15.3.0",
     "@types/rimraf": "^3.0.0",
@@ -61,6 +62,7 @@
     "np": "^7.5.0",
     "prettier": "2.3.0",
     "rimraf": "^3.0.2",
+    "semantic-release": "^17.4.4",
     "ts-jest": "^26.5.6",
     "tsc-watch": "^4.2.9",
     "typescript": "^4.1.3"
