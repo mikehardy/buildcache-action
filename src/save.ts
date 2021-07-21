@@ -1,8 +1,8 @@
 import * as path from 'path'
+import * as fs from 'fs'
 import * as artifact from '@actions/artifact'
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
-import * as io from '@actions/io'
 
 import { getCacheKeys, getEnvVar, getInstallDir, printStats } from './lib'
 
@@ -62,7 +62,7 @@ async function uploadBuildLog(): Promise<void> {
     }
   }
   try {
-    await io.rmRF(logFile)
+    await fs.promises.unlink(logFile)
   } catch (e) {
     core.warning(`buildcache: unable to delete buildcache.log ${e}`)
   }
