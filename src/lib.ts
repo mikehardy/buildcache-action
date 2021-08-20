@@ -1,7 +1,7 @@
-import * as path from 'path'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as io from '@actions/io'
+import * as path from 'path'
 
 async function execBuildCacheWithoutImpersonation(arg: string): Promise<void> {
   const env = { ...process.env } as exec.ExecOptions['env']
