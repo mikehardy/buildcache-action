@@ -72,8 +72,8 @@ jobs:
         id: pods-cache
         with:
           path: demo/ios/Pods
-          key: ${{ runner.os }}-pods-${{ github.run_id }}-v1
-          restore-keys: ${{ runner.os }}-pods
+          key: ${{ runner.os }}-pods-v2-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-pods-v2
 
       - name: Install Demo dependencies
         uses: nick-invision/retry@v2
