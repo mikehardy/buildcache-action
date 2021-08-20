@@ -1,8 +1,8 @@
-import * as path from 'path'
-import * as fs from 'fs'
 import * as artifact from '@actions/artifact'
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
+import * as fs from 'fs'
+import * as path from 'path'
 
 import { getCacheDir, getCacheKeys, getEnvVar, printStats } from './lib'
 

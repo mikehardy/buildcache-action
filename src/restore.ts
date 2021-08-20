@@ -1,9 +1,9 @@
-import * as path from 'path'
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as github from '@actions/github'
 import * as io from '@actions/io'
+import * as path from 'path'
 import * as toolcache from '@actions/tool-cache'
 
 import {
