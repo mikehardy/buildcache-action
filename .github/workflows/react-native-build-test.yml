@@ -89,7 +89,7 @@ jobs:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: pushd demo/ios && sed -i -e $'s/use_flipper/#use_flipper/' Podfile && pod install
+          command: pushd demo/ios && pod install
 
       - name: Build iOS App
         run: |
