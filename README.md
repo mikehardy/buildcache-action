@@ -112,7 +112,7 @@ iOS compile performance improvements of approximately 40-50% may be expected whe
 
 - macos-latest, warm cache, react-native-firebase app with all modules: 5min 52s (vs 10min)
 - macos-latest, warm cache, react-native 0.64 demo app without Flipper: 2min 55s (vs 5min 20s)
-- macos-latest, warm cache, react-native-vision-camera: [7min 13s (vs 13min 13s)](https://github.com/cuvent/react-native-vision-camera/pull/131#issuecomment-832687144)
+- macos-latest, warm cache, react-native-vision-camera: [7min 13s (vs 13min 13s)](https://github.com/mrousavy/react-native-vision-camera/pull/131#issuecomment-832687144)
 
 The _first_ build - the "cold" cache case - will be slower by around 15%, since buildcache has overhead to determine if it can use the cached object or not. On the cache miss case it then delegates to the compiler and stores the object for the next run which takes longer than a normal compile call.
 
