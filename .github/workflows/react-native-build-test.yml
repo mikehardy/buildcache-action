@@ -39,6 +39,10 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.2
+
       - name: Update Ruby build tools
         uses: nick-invision/retry@v2
         with:
