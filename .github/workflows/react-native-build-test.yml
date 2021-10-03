@@ -95,14 +95,6 @@ jobs:
           max_attempts: 3
           command: pushd demo/ios && pod install
 
-      - name: Re-install Pods with build fixes
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 10
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: pushd demo/ios && pod install
-
       - name: Build iOS App
         run: |
           which clang
