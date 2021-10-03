@@ -8,7 +8,7 @@ on: # rebuild any PRs and main branch changes
 
 jobs:
   compile:
-    runs-on: macos-latest
+    runs-on: macos-11
     timeout-minutes: 60
     env:
       BUILDCACHE_DIR: ../custom_buildcache_dir # will override default location
