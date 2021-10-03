@@ -29,6 +29,13 @@ jobs:
 
 - 500MB cache, cache is in `$GITHUB_WORKSPACE`, just needs build integration and you're set!
 
+When using with `actions/checkout@v2`, add this action as a step after the checkout, or the `buildcache` binary will be clobbered in the post-job cleanup of the checkout action:
+
+```yaml
+steps:
+  - uses: actions/checkout@v2
+  - uses: mikehardy/buildcache-action@v1
+```
 #### Customize if you need to
 
 All [buildcache options](https://github.com/mbitsnbites/buildcache/blob/master/doc/configuration.md) are available to override via environment variables set in the workflow env area
