@@ -147,7 +147,7 @@ async function run(): Promise<void> {
     }
   } catch (e) {
     core.error(`buildcache: failure during restore: ${e}`)
-    core.setFailed(e)
+    core.setFailed(e as Error)
   }
 }
 
