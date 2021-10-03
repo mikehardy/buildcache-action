@@ -1,10 +1,10 @@
-name: 'react-native-build'
+name: "react-native-build"
 on: # rebuild any PRs and main branch changes
   pull_request:
   push:
     branches:
       - main
-      - 'releases/*'
+      - "releases/*"
 
 jobs:
   compile:
@@ -90,12 +90,6 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: pushd demo/ios && pod install
-
-      - name: iOS React-Native Build Fixes
-        run: |
-          sed -i -e $'s/react_native_post_install(installer)/react_native_post_install(installer)\\\n    \\\n    installer.pods_project.targets.each do |target|\\\n      target.build_configurations.each do |config|\\\n        config.build_settings[\'IPHONEOS_DEPLOYMENT_TARGET\'] = \'11.0\'\\\n      end\\\n    end/' demo/ios/Podfile
-          sed -i -e $'s/react_native_post_install(installer)/react_native_post_install(installer)\\\n    \\\n    \`sed -i -e  \$\'s\/__IPHONE_10_0\/__IPHONE_12_0\/\' Pods\/RCT-Folly\/folly\/portability\/Time.h\`/' demo/ios/Podfile
-        shell: bash
 
       - name: Re-install Pods with build fixes
         uses: nick-invision/retry@v2
