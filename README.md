@@ -123,7 +123,7 @@ iOS compile performance improvements of approximately 40-50% may be expected whe
 
 The _first_ build - the "cold" cache case - will be slower by around 15%, since buildcache has overhead to determine if it can use the cached object or not. On the cache miss case it then delegates to the compiler and stores the object for the next run which takes longer than a normal compile call.
 
-If you experience low cache hit rates on a project with a largely static codebase (i.e., one that should be very cacheable), try increasing your cache size.
+If you experience low cache hit rates on a project with a largely static codebase (i.e., one that should be very cacheable and 2 runs with nearly no changes do not cache for some reason), you should definitely increase the debugging level for the buildcache log and examine stats output before and after each run. A common and easy fix may be as simple as increasing your cache size.
 
 ## Implementation Details
 
