@@ -109,7 +109,7 @@ To verify things are working using the default configuration, look at the output
 
 The output of this repositories [react-native compile test action](https://github.com/mikehardy/buildcache-action/actions/workflows/react-native-build-test.yml) are a good example.
 
-If you need more information, the default `BUILDCACHE_DEBUG` level of `2` is likely enough, you just need to add the `upload_buildcache_log` flag to your workflow integration and set it to `true`, then you may examine the actual output of buildcache as it worked, using the logfile attached as an artifact to the workflow run. If that still is not enough you may need a debug level of `3`.
+If you need more information, the default `BUILDCACHE_DEBUG` level of `2` is likely enough, you just need to add the `upload_buildcache_log` flag to your workflow integration and set it to `true`, then you may examine the actual output of buildcache as it worked, using the logfile attached as an artifact to the workflow run. If that still is not enough you may need a debug level of `1` See [Debugging Buildcache](https://github.com/mbitsnbites/buildcache/blob/master/doc/configuration.md#debugging) for more information.
 
 In practice, that is all I have needed to do to be certain the integration was successful in other projects.
 
