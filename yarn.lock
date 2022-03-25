@@ -12,10 +12,10 @@
     tmp "^0.2.1"
     tmp-promise "^3.0.2"
 
-"@actions/cache@^1.0.11":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-1.0.11.tgz#db7909ba7f7e7bc9bd1a761c172c48807586b996"
-  integrity sha512-L+VCF1JpFePAzxkYtpwYDWnd0WzSU1DoNPE2cuINKpEie27ONH0Cpqt40cG8NiJW4zbZLN+kNkEDo3F2MkUuRw==
+"@actions/cache@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-2.0.0.tgz#6e73adfadd5378e3e5c1aba928a43ea5faf14f1e"
+  integrity sha512-d7n8ul6HjWX6oDrNEPoqn8ZvqyyDhp9Uek6WOxALyxGVsXU+8+ND+viD3UfrXVWfs/GQiqI5Eq4cOozZj0yRFQ==
   dependencies:
     "@actions/core" "^1.2.6"
     "@actions/exec" "^1.0.1"
