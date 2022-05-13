@@ -12,15 +12,15 @@
     tmp "^0.2.1"
     tmp-promise "^3.0.2"
 
-"@actions/cache@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-2.0.3.tgz#c1d7635d3ac8d5de6f90b6db5aeaa6017aa37728"
-  integrity sha512-9g6WPlIZl/ff4mNpdJc/A1/vn2hRMYyUYxIfGRIVVYan2mygwVM+DBzWzVpt8HN33YUVcyiz46o9JZgM5WzJCQ==
+"@actions/cache@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-2.0.4.tgz#77f968d543b421a6191f30690289b7f93a1b1b63"
+  integrity sha512-B6c8JNTcgMUcstwbCSCjgHrSxzJ5ABxX6Y1Q9lfe8lT08ZVrnUetEZfxYRCwTgAf/gHsjdgWHW4O8Z+VvPvUuQ==
   dependencies:
     "@actions/core" "^1.2.6"
     "@actions/exec" "^1.0.1"
     "@actions/glob" "^0.1.0"
-    "@actions/http-client" "^2.0.0"
+    "@actions/http-client" "^2.0.1"
     "@actions/io" "^1.0.1"
     "@azure/ms-rest-js" "^2.6.0"
     "@azure/storage-blob" "^12.8.0"
