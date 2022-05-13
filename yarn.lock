@@ -12,15 +12,15 @@
     tmp "^0.2.1"
     tmp-promise "^3.0.2"
 
-"@actions/cache@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-2.0.2.tgz#e38167f5de20be8f61452ff1f0bb44b02558905e"
-  integrity sha512-K1DCaW/OtHj5mV7hI7HEXiceX3rM4Nc0iG2hfYsrkEy6GiOeqlCC/LyICrBZIRDM6+vSrS12tg1ORl4hghomBA==
+"@actions/cache@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-2.0.3.tgz#c1d7635d3ac8d5de6f90b6db5aeaa6017aa37728"
+  integrity sha512-9g6WPlIZl/ff4mNpdJc/A1/vn2hRMYyUYxIfGRIVVYan2mygwVM+DBzWzVpt8HN33YUVcyiz46o9JZgM5WzJCQ==
   dependencies:
     "@actions/core" "^1.2.6"
     "@actions/exec" "^1.0.1"
     "@actions/glob" "^0.1.0"
-    "@actions/http-client" "^1.0.9"
+    "@actions/http-client" "^2.0.0"
     "@actions/io" "^1.0.1"
     "@azure/ms-rest-js" "^2.6.0"
     "@azure/storage-blob" "^12.8.0"
@@ -58,13 +58,6 @@
   dependencies:
     "@actions/core" "^1.2.6"
     minimatch "^3.0.4"
-
-"@actions/http-client@^1.0.11", "@actions/http-client@^1.0.9":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@actions/http-client/-/http-client-1.0.11.tgz#c58b12e9aa8b159ee39e7dd6cbd0e91d905633c0"
-  integrity sha512-VRYHGQV1rqnROJqdMvGUbY/Kn8vriQe/F9HR2AlYHzmKuM/p3kjNuXhmdBfcVgsvRWTz5C5XW5xvndZrVBuAYg==
-  dependencies:
-    tunnel "0.0.6"
 
 "@actions/http-client@^2.0.0":
   version "2.0.0"
