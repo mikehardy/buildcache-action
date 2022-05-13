@@ -41,7 +41,7 @@
     "@actions/cache": "^2.0.2",
     "@actions/core": "^1.8.1",
     "@actions/exec": "^1.1.1",
-    "@actions/github": "^5.0.1",
+    "@actions/github": "^5.0.2",
     "@actions/tool-cache": "^2.0.0"
   },
   "devDependencies": {
