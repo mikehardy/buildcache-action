@@ -71,14 +71,14 @@
   resolved "https://registry.yarnpkg.com/@actions/io/-/io-1.1.1.tgz#4a157406309e212ab27ed3ae30e8c1d641686a66"
   integrity sha512-Qi4JoKXjmE0O67wAOH6y0n26QXhMKMFo7GD/4IXNVcrtLjUlGjGuVys6pQgwF3ArfGTQu0XpqaNr0YhED2RaRA==
 
-"@actions/tool-cache@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@actions/tool-cache/-/tool-cache-2.0.0.tgz#26b06df8d7202f458bb8b06052e6f6b8a29c6b75"
-  integrity sha512-/5/R16ddC2hw48UO5T/d1gwzsyZjBTttGLV74xnLgfD/7nJKk17ArgCi3YXj3et/IAatMDEqaTM5kw5Hevgd5A==
+"@actions/tool-cache@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@actions/tool-cache/-/tool-cache-2.0.1.tgz#8a649b9c07838d9d750c9864814e66a7660ab720"
+  integrity sha512-iPU+mNwrbA8jodY8eyo/0S/QqCKDajiR8OxWTnSk/SnYg0sj8Hp4QcUEVC1YFpHWXtrfbQrE13Jz4k4HXJQKcA==
   dependencies:
     "@actions/core" "^1.2.6"
     "@actions/exec" "^1.0.0"
-    "@actions/http-client" "^2.0.0"
+    "@actions/http-client" "^2.0.1"
     "@actions/io" "^1.1.1"
     semver "^6.1.0"
     uuid "^3.3.2"
