@@ -2,13 +2,13 @@
 # yarn lockfile v1
 
 
-"@actions/artifact@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@actions/artifact/-/artifact-1.0.1.tgz#c6d2eafeb0530e1eec26083baad583b196ecec16"
-  integrity sha512-e3jqG5rnESlHtgIaW+c1KjVtl6XVpTDvv3btY1PThJUWJNVeFIknmaCihGZyVFfRneW6c4c+qQULLpZas+BB8w==
+"@actions/artifact@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@actions/artifact/-/artifact-1.0.2.tgz#2455f04ad4b49a04f66e8dba5357fb0e8b3bc06d"
+  integrity sha512-A+CgzWqSELVFe3pMU/IrfvI/Ut2Jlf6y5G65MWHEg1k46CDgb/nnAiMJUVJUfxLbas9Vj5puA33iUkuMXnIPuQ==
   dependencies:
     "@actions/core" "^1.2.6"
-    "@actions/http-client" "^2.0.0"
+    "@actions/http-client" "^2.0.1"
     tmp "^0.2.1"
     tmp-promise "^3.0.2"
 
@@ -59,10 +59,12 @@
     "@actions/core" "^1.2.6"
     minimatch "^3.0.4"
 
-"@actions/http-client@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@actions/http-client/-/http-client-2.0.0.tgz#518c4af1e7045769d3e2ad8c2ce7f8b05224a9b3"
-  integrity sha512-fm1+OPPey5ypgStT9K8zbBhICj4J4UV/TJIHDhuWlkb8KyJaAtjcZK184dTqul0dV0nPKX97FNtDXX20BTLXSA==
+"@actions/http-client@^2.0.0", "@actions/http-client@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@actions/http-client/-/http-client-2.0.1.tgz#873f4ca98fe32f6839462a6f046332677322f99c"
+  integrity sha512-PIXiMVtz6VvyaRsGY268qvj57hXQEpsYogYOu2nrQhlf+XCGmZstmuZBbAybUl1nQGnvS1k1eEsQ69ZoD7xlSw==
+  dependencies:
+    tunnel "^0.0.6"
 
 "@actions/io@^1.0.1", "@actions/io@^1.1.1":
   version "1.1.1"
