@@ -67641,11 +67641,11 @@ const core = __importStar(__nccwpck_require__(2186));
 const exec = __importStar(__nccwpck_require__(1514));
 const io = __importStar(__nccwpck_require__(7436));
 const path = __importStar(__nccwpck_require__(5622));
-function execBuildCacheWithoutImpersonation(arg) {
+function execBuildCacheWithoutImpersonation(arg, options) {
     return __awaiter(this, void 0, void 0, function* () {
         const env = Object.assign({}, process.env);
         env === null || env === void 0 ? true : delete env.BUILDCACHE_IMPERSONATE;
-        yield exec.exec('buildcache', [arg], { env });
+        yield exec.exec('buildcache', [arg], Object.assign(Object.assign({}, options), { env }));
     });
 }
 function printConfig() {
@@ -67656,7 +67656,22 @@ function printConfig() {
 exports.printConfig = printConfig;
 function printStats() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield execBuildCacheWithoutImpersonation('-s');
+        let output = '';
+        yield execBuildCacheWithoutImpersonation('-s', {
+            listeners: {
+                stdout: (data) => {
+                    output += data.toString();
+                }
+            }
+        });
+        const get = (name, def) => {
+            var _a;
+            return ((_a = output.match(RegExp(`^  ${name}:\\s*(\\d+)$`, 'm'))) === null || _a === void 0 ? void 0 : _a[1]) || def;
+        };
+        return {
+            entries: parseInt(get(`Entries in cache`, '-1')),
+            misses: parseInt(get(`Misses`, '-1'))
+        };
     });
 }
 exports.printStats = printStats;

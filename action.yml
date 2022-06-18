@@ -8,6 +8,9 @@ inputs:
   key:
     description: 'deprecated: synonym for `cache_key`, use cache_key. Will be removed in v2'
     required: false
+  save_cache:
+    description: 'Set to false not to save the cache at the end of the job'
+    required: false
   access_token:
     required: false
     description: 'Your GitHub Access Token to fetch buildcache latest build, defaults to: {{ github.token }}'

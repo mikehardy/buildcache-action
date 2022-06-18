@@ -65908,11 +65908,11 @@ const core = __importStar(__nccwpck_require__(2186));
 const exec = __importStar(__nccwpck_require__(1514));
 const io = __importStar(__nccwpck_require__(7436));
 const path = __importStar(__nccwpck_require__(5622));
-function execBuildCacheWithoutImpersonation(arg) {
+function execBuildCacheWithoutImpersonation(arg, options) {
     return __awaiter(this, void 0, void 0, function* () {
         const env = Object.assign({}, process.env);
         env === null || env === void 0 ? true : delete env.BUILDCACHE_IMPERSONATE;
-        yield exec.exec('buildcache', [arg], { env });
+        yield exec.exec('buildcache', [arg], Object.assign(Object.assign({}, options), { env }));
     });
 }
 function printConfig() {
@@ -65923,7 +65923,22 @@ function printConfig() {
 exports.printConfig = printConfig;
 function printStats() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield execBuildCacheWithoutImpersonation('-s');
+        let output = '';
+        yield execBuildCacheWithoutImpersonation('-s', {
+            listeners: {
+                stdout: (data) => {
+                    output += data.toString();
+                }
+            }
+        });
+        const get = (name, def) => {
+            var _a;
+            return ((_a = output.match(RegExp(`^  ${name}:\\s*(\\d+)$`, 'm'))) === null || _a === void 0 ? void 0 : _a[1]) || def;
+        };
+        return {
+            entries: parseInt(get(`Entries in cache`, '-1')),
+            misses: parseInt(get(`Misses`, '-1'))
+        };
     });
 }
 exports.printStats = printStats;
@@ -66036,17 +66051,29 @@ const core = __importStar(__nccwpck_require__(2186));
 const fs = __importStar(__nccwpck_require__(5747));
 const path = __importStar(__nccwpck_require__(5622));
 const lib_1 = __nccwpck_require__(9730);
-function save() {
+function save(stats) {
     return __awaiter(this, void 0, void 0, function* () {
         const { unique } = (0, lib_1.getCacheKeys)();
         const cacheDir = yield (0, lib_1.getCacheDir)();
         const paths = [cacheDir];
-        core.info(`buildcache: saving cache with key "${unique}".`);
-        try {
-            yield cache.saveCache(paths, unique);
+        const saveCache = core.getInput('save_cache');
+        if (saveCache === 'false') {
+            core.info('buildcache: not saving cache.');
         }
-        catch (e) {
-            core.warning(`buildcache: caching not working: ${e}`);
+        else if (stats.entries === 0) {
+            core.info('buildcache: not saving empty cache.');
+        }
+        else if (stats.misses === 0) {
+            core.info('buildcache: not saving unmodified cache.');
+        }
+        else {
+            core.info(`buildcache: saving cache with key "${unique}".`);
+            try {
+                yield cache.saveCache(paths, unique);
+            }
+            catch (e) {
+                core.warning(`buildcache: caching not working: ${e}`);
+            }
         }
     });
 }
@@ -66083,9 +66110,9 @@ function uploadBuildLog() {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield (0, lib_1.printStats)();
+        const stats = yield (0, lib_1.printStats)();
         yield uploadBuildLog();
-        yield save();
+        yield save(stats);
     });
 }
 run();

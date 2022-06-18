@@ -3,18 +3,42 @@ import * as exec from '@actions/exec'
 import * as io from '@actions/io'
 import * as path from 'path'
 
-async function execBuildCacheWithoutImpersonation(arg: string): Promise<void> {
+export interface Stats {
+  entries: number
+  misses: number
+}
+
+async function execBuildCacheWithoutImpersonation(
+  arg: string,
+  options?: {}
+): Promise<void> {
   const env = { ...process.env } as exec.ExecOptions['env']
   delete env?.BUILDCACHE_IMPERSONATE
-  await exec.exec('buildcache', [arg], { env })
+  await exec.exec('buildcache', [arg], { ...options, env })
 }
 
 export async function printConfig(): Promise<void> {
   await execBuildCacheWithoutImpersonation('-c')
 }
 
-export async function printStats(): Promise<void> {
-  await execBuildCacheWithoutImpersonation('-s')
+export async function printStats(): Promise<Stats> {
+  let output = ''
+  await execBuildCacheWithoutImpersonation('-s', {
+    listeners: {
+      stdout: (data: Buffer) => {
+        output += data.toString()
+      }
+    }
+  })
+
+  const get = (name: string, def: string): string => {
+    return output.match(RegExp(`^  ${name}:\\s*(\\d+)$`, 'm'))?.[1] || def
+  }
+
+  return {
+    entries: parseInt(get(`Entries in cache`, '-1')),
+    misses: parseInt(get(`Misses`, '-1'))
+  }
 }
 
 export async function zeroStats(): Promise<void> {
