@@ -153,7 +153,7 @@ This action does these things - if they interact poorly with your project, perha
 If you set up a personal access token on GitHub, then export it as well as a couple other items, the whole thing runs well from a local mac for development.
 
 ```bash
-alias buildcache-action-exports='export GITHUB_TOKEN=PERSONALACCESSTOKENHERE; export RUNNER_TEMP=`pwd`/__tests__/runner/TEMP; export RUNNER_CACHE=`pwd`/__tests__/runner/CACHE; export GITHUB_WORKSPACE=`pwd`/__tests__/runner/WORKSPACE'
+export GITHUB_TOKEN=PERSONALACCESSTOKENHERE
 ```
 
 I usually have two terminals open side by side, one with `yarn build-watch` and one to run `yarn test`
