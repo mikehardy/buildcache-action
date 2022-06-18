@@ -4,19 +4,28 @@ import * as core from '@actions/core'
 import * as fs from 'fs'
 import * as path from 'path'
 
-import { getCacheDir, getCacheKeys, getEnvVar, printStats } from './lib'
+import { Stats, getCacheDir, getCacheKeys, getEnvVar, printStats } from './lib'
 
-async function save(): Promise<void> {
+async function save(stats: Stats): Promise<void> {
   const { unique } = getCacheKeys()
 
   const cacheDir = await getCacheDir()
   const paths = [cacheDir]
 
-  core.info(`buildcache: saving cache with key "${unique}".`)
-  try {
-    await cache.saveCache(paths, unique)
-  } catch (e) {
-    core.warning(`buildcache: caching not working: ${e}`)
+  const saveCache = core.getInput('save_cache')
+  if (saveCache === 'false') {
+    core.info('buildcache: not saving cache.')
+  } else if (stats.entries === 0) {
+    core.info('buildcache: not saving empty cache.')
+  } else if (stats.misses === 0) {
+    core.info('buildcache: not saving unmodified cache.')
+  } else {
+    core.info(`buildcache: saving cache with key "${unique}".`)
+    try {
+      await cache.saveCache(paths, unique)
+    } catch (e) {
+      core.warning(`buildcache: caching not working: ${e}`)
+    }
   }
 }
 
@@ -61,9 +70,9 @@ async function uploadBuildLog(): Promise<void> {
 }
 
 async function run(): Promise<void> {
-  await printStats()
+  const stats = await printStats()
   await uploadBuildLog()
-  await save()
+  await save(stats)
 }
 
 run()
