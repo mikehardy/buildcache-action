@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/mikehardy/buildcache-action/compare/v1.2.2...v1.3.0) (2022-06-26)
+
+
+### Features
+
+* avoid storing empty/no-change caches + add toggle to skip cache store ([8ddbf68](https://github.com/mikehardy/buildcache-action/commit/8ddbf681fc4e39327c7939600be3f3d7f0c676e8))
+
 ## [1.2.2](https://github.com/mikehardy/buildcache-action/compare/v1.2.1...v1.2.2) (2021-07-21)
 
 
