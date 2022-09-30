@@ -17,7 +17,7 @@ jobs:
       BUILDCACHE_MAX_CACHE_SIZE: 234567890 # will override default of 500000000
       BUILDCACHE_MAX_LOCAL_ENTRY_SIZE: 34567890 # Not used by buildache-action, but will pass through...
     steps:
-      - uses: styfle/cancel-workflow-action@0.10.0
+      - uses: styfle/cancel-workflow-action@0.10.1
         with:
           all_but_latest: true
 
