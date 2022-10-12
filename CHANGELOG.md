@@ -1,3 +1,14 @@
+## [2.0.0](https://github.com/mikehardy/buildcache-action/compare/v1.3.0...v2.0.0) (2022-10-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** use node16
+
+### Bug Fixes
+
+* **deps:** use node16 ([38afb35](https://github.com/mikehardy/buildcache-action/commit/38afb357c4bd1834789044c3259a6748c06ef891)), closes [#100](https://github.com/mikehardy/buildcache-action/issues/100)
+
 # [1.3.0](https://github.com/mikehardy/buildcache-action/compare/v1.2.2...v1.3.0) (2022-06-26)
 
 
