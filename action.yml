@@ -28,7 +28,7 @@ inputs:
     default: true
     description: 'Defaults to true, will print stats on restore, then zero them for run-specific stats on save'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/restore/index.js'
   post: 'dist/save/index.js'
 branding:
