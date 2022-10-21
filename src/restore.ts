@@ -36,10 +36,26 @@ export async function downloadLatest(accessToken: string): Promise<string> {
   // Grab the releases page for the for the buildcache project
   const octokit = github.getOctokit(accessToken)
 
-  const releaseInfo = await octokit.rest.repos.getLatestRelease({
-    owner: 'mbitsnbites',
-    repo: 'buildcache'
-  })
+  // Should we get the latest, or has the user provided a tag?
+  const buildcacheTag = core.getInput('buildcache_tag')
+  let releaseInfo
+  if (!buildcacheTag || buildcacheTag.toLowerCase() === 'latest') {
+    releaseInfo = await octokit.rest.repos.getLatestRelease({
+      owner: 'mbitsnbites',
+      repo: 'buildcache'
+    })
+  } else {
+    releaseInfo = await octokit.rest.repos.getReleaseByTag({
+      owner: 'mbitsnbites',
+      repo: 'buildcache',
+      tag: buildcacheTag
+    })
+    if (!releaseInfo) {
+      throw new Error(
+        `Unable to find a buildcache release with tag '${buildcacheTag}'`
+      )
+    }
+  }
 
   // core.info(`Got release info: ${JSON.stringify(releaseInfo, null, 2)}`)
   const buildCacheReleaseUrl = `https://github.com/mbitsnbites/buildcache/releases/download/${releaseInfo.data.tag_name}/${filename}`
