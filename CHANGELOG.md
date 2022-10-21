@@ -1,3 +1,10 @@
+## [2.1.0](https://github.com/mikehardy/buildcache-action/compare/v2.0.0...v2.1.0) (2022-10-21)
+
+
+### Features
+
+* add config option to explicitly set the buildcache tag to use ([#105](https://github.com/mikehardy/buildcache-action/issues/105)) ([1db83fb](https://github.com/mikehardy/buildcache-action/commit/1db83fb06b0da378aa7db7a1110923b904417cbc))
+
 ## [2.0.0](https://github.com/mikehardy/buildcache-action/compare/v1.3.0...v2.0.0) (2022-10-12)
 
 
