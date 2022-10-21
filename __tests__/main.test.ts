@@ -45,10 +45,15 @@ test('test bundled restore runs', async () => {
   const np = process.execPath
 
   const installDir = await getInstallDir()
-  const env = process.env
-  env['PATH'] = `${installDir}/buildcache/bin:${env['PATH']}`
-  const options: cp.ExecFileSyncOptions = {
-    env
+  const PATH = `${installDir}/buildcache/bin:${process.env['PATH']}`
+  const options = {
+    env: {
+      ...process.env,
+      PATH,
+      ...mapInputToEnv({
+        buildcache_tag: process.env['ACTION_BUILDCACHE_TAG'] || 'latest'
+      })
+    }
   }
 
   const rp = path.join(__dirname, '..', 'dist', 'restore', 'index.js')
@@ -129,7 +134,10 @@ describe('save cache', () => {
     })
 
     test('it should store cache', async () => {
-      await restore()
+      const input = {
+        buildcache_tag: process.env['ACTION_BUILDCACHE_TAG'] || 'latest'
+      }
+      await restore(input)
       await compile(file)
       const o = await save()
 
@@ -138,7 +146,8 @@ describe('save cache', () => {
 
     test('it should not store cache if save_cache is false', async () => {
       const input = {
-        save_cache: 'false'
+        save_cache: 'false',
+        buildcache_tag: process.env['ACTION_BUILDCACHE_TAG'] || 'latest'
       }
       await restore(input)
       await compile(file)
@@ -148,7 +157,10 @@ describe('save cache', () => {
     })
 
     test('it should not store cache if it is empty', async () => {
-      await restore()
+      const input = {
+        buildcache_tag: process.env['ACTION_BUILDCACHE_TAG'] || 'latest'
+      }
+      await restore(input)
       const o = await save()
 
       expect(o.split('\n')).toContain('buildcache: not saving empty cache.')
@@ -156,8 +168,11 @@ describe('save cache', () => {
 
     describe('with entries already cached', () => {
       beforeEach(async () => {
+        const input = {
+          buildcache_tag: process.env['ACTION_BUILDCACHE_TAG'] || 'latest'
+        }
         // add entries to cache
-        await restore()
+        await restore(input)
         await compile(file)
         await save()
 
@@ -165,7 +180,11 @@ describe('save cache', () => {
       })
 
       test('it should not store cache if nothing was added', async () => {
-        await restore({ zero_buildcache_stats: 'true' })
+        const input = {
+          zero_buildcache_stats: 'true',
+          buildcache_tag: process.env['ACTION_BUILDCACHE_TAG'] || 'latest'
+        }
+        await restore(input)
         await compile(file)
         const o = await save()
 
