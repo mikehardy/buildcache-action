@@ -27,6 +27,10 @@ inputs:
     required: false
     default: true
     description: 'Defaults to true, will print stats on restore, then zero them for run-specific stats on save'
+  buildcache_tag:
+    required: false
+    default: "latest"
+    description: "Explicitly provide the tag for the release of buildcache to be used. ie. `v0.27.7`"
 runs:
   using: 'node16'
   main: 'dist/restore/index.js'
