@@ -24,7 +24,7 @@ jobs:
   ios:
   runs-on: macos-latest # also runs on ubuntu and windows
   steps:
-    - uses: mikehardy/buildcache-action@v1
+    - uses: mikehardy/buildcache-action@v2.1.0
 ```
 
 - 500MB cache, cache is in `$GITHUB_WORKSPACE`, just needs build integration and you're set!
@@ -33,8 +33,8 @@ When using with `actions/checkout@v2`, add this action as a step after the check
 
 ```yaml
 steps:
-  - uses: actions/checkout@v2
-  - uses: mikehardy/buildcache-action@v1
+  - uses: actions/checkout@v3
+  - uses: mikehardy/buildcache-action@v2.1.0
 ```
 #### Customize if you need to
 
