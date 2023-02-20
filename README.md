@@ -24,7 +24,7 @@ jobs:
   ios:
   runs-on: macos-latest # also runs on ubuntu and windows
   steps:
-    - uses: mikehardy/buildcache-action@v2.1.0
+    - uses: mikehardy/buildcache-action@v2
 ```
 
 - 500MB cache, cache is in `$GITHUB_WORKSPACE`, just needs build integration and you're set!
