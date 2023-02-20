@@ -34,7 +34,7 @@ When using with `actions/checkout@v2`, add this action as a step after the check
 ```yaml
 steps:
   - uses: actions/checkout@v3
-  - uses: mikehardy/buildcache-action@v2.1.0
+  - uses: mikehardy/buildcache-action@v2
 ```
 #### Customize if you need to
 
