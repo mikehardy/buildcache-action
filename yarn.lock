@@ -12,10 +12,10 @@
     tmp "^0.2.1"
     tmp-promise "^3.0.2"
 
-"@actions/cache@^3.1.4":
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-3.1.4.tgz#409a2befcc7ed66633a194afbd30ab9360b7880a"
-  integrity sha512-Uh9wsz7SxunfyqF3UY/wfHI81z97CYQrZs4NU+whzYd0N8emTaloB+XtrAq46X2RbQEOBjF6R090jKQpX4coGg==
+"@actions/cache@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-3.2.1.tgz#bbd4680aeab811f3e839e58be493ffe7583d0311"
+  integrity sha512-QurbMiY//02+0kN1adJkMHN44RcZ5kAXfhSnKUZmtSmhMTNqLitGArG1xOkt93NNyByTlLGAc5wIOF/dZ2ENOQ==
   dependencies:
     "@actions/core" "^1.10.0"
     "@actions/exec" "^1.0.1"
@@ -24,7 +24,7 @@
     "@actions/io" "^1.0.1"
     "@azure/abort-controller" "^1.1.0"
     "@azure/ms-rest-js" "^2.6.0"
-    "@azure/storage-blob" "^12.8.0"
+    "@azure/storage-blob" "^12.13.0"
     semver "^6.1.0"
     uuid "^3.3.3"
 
@@ -105,22 +105,21 @@
     "@azure/abort-controller" "^1.0.0"
     tslib "^2.2.0"
 
-"@azure/core-http@^2.0.0":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@azure/core-http/-/core-http-2.2.1.tgz#9998f04b9e2f0255f4368034d423903ba90c75db"
-  integrity sha512-7ATnV3OGzCO2K9kMrh3NKUM8b4v+xasmlUhkNZz6uMbm+8XH/AexLkhRGsoo0GyKNlEGvyGEfytqTk0nUY2I4A==
+"@azure/core-http@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@azure/core-http/-/core-http-3.0.0.tgz#345845f9ba479a5ee41efc3fd7a13e82d2a0ec47"
+  integrity sha512-BxI2SlGFPPz6J1XyZNIVUf0QZLBKFX+ViFjKOkzqD18J1zOINIQ8JSBKKr+i+v8+MB6LacL6Nn/sP/TE13+s2Q==
   dependencies:
     "@azure/abort-controller" "^1.0.0"
-    "@azure/core-asynciterator-polyfill" "^1.0.0"
     "@azure/core-auth" "^1.3.0"
     "@azure/core-tracing" "1.0.0-preview.13"
+    "@azure/core-util" "^1.1.1"
     "@azure/logger" "^1.0.0"
     "@types/node-fetch" "^2.5.0"
     "@types/tunnel" "^0.0.3"
     form-data "^4.0.0"
-    node-fetch "^2.6.0"
+    node-fetch "^2.6.7"
     process "^0.11.10"
-    tough-cookie "^4.0.0"
     tslib "^2.2.0"
     tunnel "^0.0.6"
     uuid "^8.3.0"
@@ -152,6 +151,14 @@
     "@opentelemetry/api" "^1.0.1"
     tslib "^2.2.0"
 
+"@azure/core-util@^1.1.1":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@azure/core-util/-/core-util-1.2.0.tgz#3499deba1fc36dda6f1912b791809b6f15d4a392"
+  integrity sha512-ffGIw+Qs8bNKNLxz5UPkz4/VBM/EZY07mPve1ZYFqYUdPwFqRj0RPk0U7LZMOfT7GCck9YjuT1Rfp1PApNl1ng==
+  dependencies:
+    "@azure/abort-controller" "^1.0.0"
+    tslib "^2.2.0"
+
 "@azure/logger@^1.0.0":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@azure/logger/-/logger-1.0.3.tgz#6e36704aa51be7d4a1bae24731ea580836293c96"
@@ -174,13 +181,13 @@
     uuid "^8.3.2"
     xml2js "^0.4.19"
 
-"@azure/storage-blob@^12.8.0":
-  version "12.8.0"
-  resolved "https://registry.yarnpkg.com/@azure/storage-blob/-/storage-blob-12.8.0.tgz#97b7ecc6c7b17bcbaf0281c79c16af6f512d6130"
-  integrity sha512-c8+Wz19xauW0bGkTCoqZH4dYfbtBniPiGiRQOn1ca6G5jsjr4azwaTk9gwjVY8r3vY2Taf95eivLzipfIfiS4A==
+"@azure/storage-blob@^12.13.0":
+  version "12.13.0"
+  resolved "https://registry.yarnpkg.com/@azure/storage-blob/-/storage-blob-12.13.0.tgz#9209cbb5c2cd463fb967a0f2ae144ace20879160"
+  integrity sha512-t3Q2lvBMJucgTjQcP5+hvEJMAsJSk0qmAnjDLie2td017IiduZbbC9BOcFfmwzR6y6cJdZOuewLCNFmEx9IrXA==
   dependencies:
     "@azure/abort-controller" "^1.0.0"
-    "@azure/core-http" "^2.0.0"
+    "@azure/core-http" "^3.0.0"
     "@azure/core-lro" "^2.2.0"
     "@azure/core-paging" "^1.1.1"
     "@azure/core-tracing" "1.0.0-preview.13"
