@@ -52,7 +52,7 @@ jobs:
       BUILDCACHE_LOG_FILE: ../buildcache.log # optional: Log where you like
   runs-on: macos-latest
   steps:
-    - uses: mikehardy/buildcache-action@v1
+    - uses: mikehardy/buildcache-action@v2
       with:
         cache_key: ${{ matrix.os }} # optional: separate caches maybe?
         upload_buildcache_log: 'true' # optional: 100% cache misses? Find out why
