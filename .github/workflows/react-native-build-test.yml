@@ -31,7 +31,7 @@ jobs:
           cache_key: react-native-compile # demonstrate putting custom key component in cache key
           upload_buildcache_log: true # demonstrate buildcache upload
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
 
